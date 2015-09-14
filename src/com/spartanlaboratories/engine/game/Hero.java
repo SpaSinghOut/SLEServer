@@ -104,7 +104,7 @@ public class Hero<Element extends Ability> extends Alive{
 		manaBar.setWidth(getWidth() * getRatio("mana"));
 		healthBar.changeLocation(0, -healthBar.getHeight());
 	}
-	public void addAbility(Element element){
+	void addAbility(Element element){
 		abilities.add(element);
 		element.owner = this;
 	}

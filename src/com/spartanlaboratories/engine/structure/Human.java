@@ -1,9 +1,12 @@
 package com.spartanlaboratories.engine.structure;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import com.spartanlaboratories.engine.game.Ability;
 import com.spartanlaboratories.engine.game.Actor;
 import com.spartanlaboratories.engine.game.Alive.Faction;
+import com.spartanlaboratories.engine.game.Hero;
 import com.spartanlaboratories.engine.util.Location;
 
 public abstract class Human extends Controller{
@@ -11,11 +14,11 @@ public abstract class Human extends Controller{
 	ArrayList<Camera> cameras = new ArrayList<Camera>();
 	Location mouseLocation = new Location();
 	public static ArrayList<Human> players = new ArrayList<Human>();
-	protected final int MOUSELOCATION = 0, MOUSEWHEEL = 4;
+	protected final int MOUSELOCATION = 0, MOUSELEFT = 1, MOUSEMIDDLE = 2, MOUSERIGHT = 3, MOUSEWHEEL = 4;
 	public Human(Engine engine, Faction setFaction) {
 		super(engine, setFaction);
-		
 		players.add(this);
+		this.engine.map.forConnected(this);
 	}
 	@Override 
 	public void tick(){
@@ -30,22 +33,21 @@ public abstract class Human extends Controller{
 	}
 	void receiveMouseInput(int button, String string) throws IllegalArgumentException{
 		try{
-			/*
-			if(button == 0)
-				coveringCamera(this.mouseLocation = Location.parseLocation(string)).handleMouseLocation(getMouseLocation());
-			*/
 			if(button == MOUSELOCATION)
 				mouseLocation = Location.parseLocation(string);
 			else if(button < 4 && button > 0){
 				coveringCamera(getMouseLocation()).handleClick(button);
-				if(button == 1){
+				if(button == MOUSELEFT){
 					Actor clicked = coveringCamera(mouseLocation).unitAt(mouseLocation);
 					if(clicked != null)
 						setSelectedUnit(clicked);
 				}
-				else if(button == 3)
+				else if(button == MOUSERIGHT)
 					if(selectedUnit != null)
-						selectedUnit.rightClick(mouseLocation, coveringCamera(mouseLocation));
+						if(controlledUnits.contains(selectedUnit))
+							selectedUnit.rightClick(mouseLocation, coveringCamera(mouseLocation));
+						else
+							setSelectedUnit(controlledUnits.isEmpty() ? null : controlledUnits.get(0));
 			}
 			else if(button == MOUSEWHEEL)
 				coveringCamera(getMouseLocation()).handleMouseWheel(Integer.parseInt(string), getMouseLocation());
@@ -56,7 +58,7 @@ public abstract class Human extends Controller{
 		}
 	}
 	public void receiveKeyInput(int key, String pressType){
-		
+		if(key == KeyEvent.VK_Q)((Ability)((Hero)controlledUnits.get(0)).abilities.get(0)).cast();
 	}
 	public Camera coveringCamera(Location locationOnScreen) throws SLEImproperInputException{
 		for(Camera c:cameras)

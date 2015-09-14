@@ -8,10 +8,10 @@ import com.spartanlaboratories.engine.game.VisibleObject;
 import com.spartanlaboratories.engine.util.Location;
 
 public interface Camera {
-	public final ArrayList<Quad> quads = new ArrayList<Quad>();
+	public ArrayList<Quad> getQuadList();
 	public void generateQuad(VisibleObject visibleObject);
 	public default void clearQuads(){
-		quads.clear();
+		getQuadList().clear();
 	}
 	public Location getWorldLocation(Location locationOnScreen);
 	public ArrayList<VisibleObject> getQualifiedObjects();

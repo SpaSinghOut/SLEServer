@@ -16,6 +16,7 @@ import com.spartanlaboratories.engine.util.Location;
  * @author Spartak
  */
 public class StandardCamera extends StructureObject implements Camera{
+	private ArrayList<Quad> quads = new ArrayList<Quad>();
 	public EdgePanRules edgePanRules = new EdgePanRules();
 	public class EdgePanRules{
 		boolean panOn;
@@ -67,7 +68,7 @@ public class StandardCamera extends StructureObject implements Camera{
 		this.worldLocation = worldLocation;
 		dimensions = new Location(screenSize.x, screenSize.y);
 		monitorLocation = new Location(screenSize.x / 2, screenSize.y / 2);
-		edgePanRules.panningSpeed = 600 / engine.getTickRate();
+		edgePanRules.panningSpeed = 600 / Engine.getTickRate();
 		additionalSpeed = 0;
 		acceleration = 1;
 	}
@@ -109,7 +110,7 @@ public class StandardCamera extends StructureObject implements Camera{
 	 * 	<br> {@code false} if any part of the passed in visible object is not visible.
 	 */
 	public boolean fullyWithinBounds(VisibleObject vo){
-		Location loc = vo.getLocation().getScreenCoords(this);
+		Location loc = this.getMonitorLocation(vo.getLocation());
 		double x = loc.x, y = loc.y;
 		return xMinBound(x - vo.getWidth() / 2)
 				&& xMaxBound(x + vo.getWidth() / 2)
@@ -158,7 +159,7 @@ public class StandardCamera extends StructureObject implements Camera{
 	}
 	@Override
 	public void generateQuad(VisibleObject visibleObject){
-		Texture texture = visibleObject.getTexture();
+		String texture = visibleObject.getTexture();
 		boolean hasTexture = texture != null;
 		Location[] quadCorners = new Location[4], textureValues = new Location[4];
 		quadCorners[0] = getMonitorLocation(visibleObject.getAreaCovered().northWest);
@@ -166,13 +167,13 @@ public class StandardCamera extends StructureObject implements Camera{
 		quadCorners[2] = getMonitorLocation(visibleObject.getAreaCovered().southEast);
 		quadCorners[3] = getMonitorLocation(visibleObject.getAreaCovered().southWest);
 		textureValues[0] = new Location();
-		textureValues[1] = hasTexture ? new Location(texture.getWidth(), 0) : new Location();
-		textureValues[2] = hasTexture ? new Location(texture.getWidth(), texture.getHeight()): new Location();
-		textureValues[3] = hasTexture ? new Location(0, texture.getHeight()) :new Location();
+		textureValues[1] = hasTexture ? new Location(1, 0) : new Location();
+		textureValues[2] = hasTexture ? new Location(1, 1): new Location();
+		textureValues[3] = hasTexture ? new Location(0, 1) :new Location();
 		Quad quad = new Quad(quadCorners, textureValues);
 		quad.texture = visibleObject.getTextureInfo().namePath;
 		quad.color = visibleObject.getColor();
-		quads.add(quad);
+		getQuadList().add(quad);
 	}
 	@Override
 	public Actor unitAt(Location monitorLocation){
@@ -230,5 +231,10 @@ public class StandardCamera extends StructureObject implements Camera{
 	public void handleMouseWheel(int change, Location locationOnScreen) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public ArrayList<Quad> getQuadList() {
+		// TODO Auto-generated method stub
+		return quads;
 	}
 }

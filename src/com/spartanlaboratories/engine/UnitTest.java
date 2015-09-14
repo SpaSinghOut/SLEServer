@@ -1,6 +1,8 @@
 package com.spartanlaboratories.engine;
 
+import com.spartanlaboratories.engine.game.Ability;
 import com.spartanlaboratories.engine.game.Hero;
+import com.spartanlaboratories.engine.structure.Controller;
 import com.spartanlaboratories.engine.structure.DynamicCamera;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.structure.Human;
@@ -12,16 +14,14 @@ public class UnitTest extends Map{
 	private static final int numberOfPlayers = 1;
 	public static void main(String[] args){
 		Engine engine = new Engine();
-		engine.goMultiTest(new UnitTest(engine));
+		engine.goMulti(new UnitTest(engine),numberOfPlayers);
+		//engine.goMultiTest(new UnitTest(engine));
+		engine.tracker.initialize(Tracker.TrackerPreset.PRESET_TICK);
+		engine.run();
 	}
 	public UnitTest(Engine engine) {
 		super(engine);
 		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public void init() {
-		engine.tracker.initialize(Tracker.TrackerPreset.PRESET_TICK);
 	}
 	@Override
 	protected void update() {
@@ -29,26 +29,49 @@ public class UnitTest extends Map{
 		
 	}
 	@Override
-	public void forConnected(Human human) {
-		Hero hero = new Hero(engine, Hero.HeroType.RAZOR, human);
+	protected void playerStartAction(Controller controller) {
+		Hero<Spell> hero = new Hero<Spell>(engine, Hero.HeroType.RAZOR, controller);
 		hero.setTexture("res/test.png");
 		hero.setSize(60,60);
 		hero.setLocation(0,0);
 		hero.setColor("white");
-		while(human.getScreenSize().equals(new Location()));
+		controller.addUnit(hero);
 		
-		DynamicCamera mainCamera = new DynamicCamera(engine, human.getScreenSize());
+		if(!Human.class.isAssignableFrom(controller.getClass()))return;
+		
+		//Waits until the human has information about the screen size
+		while(((Human)controller).getScreenSize().equals(new Location()));
+		
+		DynamicCamera mainCamera = new DynamicCamera(engine, ((Human)controller).getScreenSize());
 		
 		mainCamera.setWorldLocation(new Location(0,0));
 		//mainCamera.setDrawArea(new Rectangle(new Location(1000,500),new Location(1000,500)));
 		//mainCamera.setMonitorSize(new Location(1000,500));
 		mainCamera.setDefaultZoomAmount(1.1);
+		mainCamera.followMouseOnZoom(true);
+		//mainCamera.setZoomMouseImpact(.1);
+		mainCamera.holdPointOnZoom(true);
+		mainCamera.setZoomBounds(0.1,10);
 		
 		mainCamera.setCameraAcceleration(2);
 		mainCamera.setCameraSpeed(30);
 		mainCamera.setPanningRange(60);
 		
-		human.addCamera(mainCamera);
+		((Human)controller).addCamera(mainCamera);
+		new Spell("fireball",hero);
+	}
+}
+class Spell extends Ability{
+
+	public Spell(String abilityName, Hero<Spell> setOwner) {
+		super(abilityName, setOwner);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void cast() {
+		System.out.println("test");
+		owner.goTo(new Location(owner.getLocation().x + 100,owner.getLocation().y + 100));
 	}
 	
 }

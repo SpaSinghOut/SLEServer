@@ -4,17 +4,14 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.newdawn.slick.opengl.Texture;
-
 import com.spartanlaboratories.engine.game.Actor;
-import com.spartanlaboratories.engine.game.Hero;
 import com.spartanlaboratories.engine.game.VisibleObject;
 import com.spartanlaboratories.engine.util.Location;
 import com.spartanlaboratories.measurements.Rectangle;
 
 public class DynamicCamera extends StructureObject implements Camera{
 	// FIELD DECLARATIONS
-	
+	private ArrayList<Quad> quads = new ArrayList<Quad>();
 	private Rectangle world;
 	private Rectangle monitor;
 	private final Location standardZoomValues = new Location();
@@ -48,8 +45,8 @@ public class DynamicCamera extends StructureObject implements Camera{
 	 * @param engine
 	 */
 	public DynamicCamera(Engine engine, Location screenSize){
-		this(engine, new Rectangle(new Location(), screenSize.x, screenSize.y), 
-				new Rectangle(new Location(screenSize.x / 2, screenSize.y / 2), 
+		this(engine, 	new Rectangle(new Location(), screenSize.x, screenSize.y), 
+						new Rectangle(new Location(screenSize.x / 2, screenSize.y / 2), 
 						screenSize.x, screenSize.y));
 	}
 	
@@ -73,14 +70,17 @@ public class DynamicCamera extends StructureObject implements Camera{
 		location.change(locChange);
 		world.setCenter(location);
 	}
+	@SuppressWarnings("unused")
 	private void setWorldStats(Location center, Location size){
 		world = new Rectangle(center, size.x, size.y);
 	}
-	private void setWorldSize(Location newSize){
-		world.setSize(newSize);
+	private void setWorldSize(com.spartanlaboratories.measurements.Location worldSize){
+		world.setSize(worldSize);
 	}
 	private void magnifyWorld(com.spartanlaboratories.measurements.Location location){
-		world.getSize().magnify(location);
+		com.spartanlaboratories.measurements.Location worldSize = world.getSize();
+		worldSize.magnify(location);
+		setWorldSize(worldSize);
 		//setWorldSize(new Location(world.getSize().x * location.x, world.getSize().y * location.y));
 	}
 	public void setMonitorSize(Location newSize){
@@ -106,10 +106,10 @@ public class DynamicCamera extends StructureObject implements Camera{
 		zoomMouseImpact = impact;
 	}
 	public void setCameraSpeed(int speed){
-		this.speed = ((double)speed) / engine.getTickRate();
+		this.speed = ((double)speed) / Engine.getTickRate();
 	}
 	public void setCameraAcceleration(int acceleration){
-		this.acceleration = ((double)acceleration) / engine.getTickRate();
+		this.acceleration = ((double)acceleration) / Engine.getTickRate();
 	}
 	public void setPanningRange(int numPixels){
 		panningRange = numPixels;
@@ -191,6 +191,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 		updateAmplification();
 		return zoomLevel.x > zoomBind.x && zoomLevel.y > zoomBind.x && zoomLevel.x < zoomBind.y && zoomLevel.y < zoomBind.y;
 	}
+	@SuppressWarnings("unused")
 	private void updateZoom(double ratio){
 		zoomLevel.magnify(ratio);
 	}
@@ -208,6 +209,12 @@ public class DynamicCamera extends StructureObject implements Camera{
 	}
 	public com.spartanlaboratories.measurements.Location getZoomBounds(){
 		return zoomBind.copy();
+	}
+	public void setZoomBounds(Location location){
+		zoomBind.duplicate(location);
+	}
+	public void setZoomBounds(double x, double y){
+		setZoomBounds(new Location(x,y));
 	}
 	
 	//**********************************   END ZOOM METHODS   ******************************//
@@ -276,7 +283,8 @@ public class DynamicCamera extends StructureObject implements Camera{
 		objectBinds.remove(key);
 		locationBinds.remove(key);
 	}
-	public void handleMouseWheel(int change){;
+	public void handleMouseWheel(int change){
+		System.out.println(defaultZoomAmount);
 		zoomOut(new Location((defaultZoomAmount.x - 1) * change + 1, (defaultZoomAmount.y - 1) * change + 1));
 	}
 	
@@ -315,7 +323,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 				&& withinWorldYBounds(area.getYMax());
 	}
 	
-	// Object class method overrides and other generic API
+	// Method overrides and other generic API
 	public String toString(){
 		return "In world: " + world.getCenter() + world.getSize() + " On monitor: " + monitor.getCenter() + monitor.getSize();
 	}
@@ -346,7 +354,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 	
 	@Override
 	public void generateQuad(VisibleObject visibleObject){
-		Texture texture = visibleObject.getTextureNE();
+		String texture = visibleObject.getTextureNE();
 		boolean hasTexture = texture != null;
 		Location[] quadCorners = new Location[4], textureValues = new Location[4];
 		
@@ -372,8 +380,8 @@ public class DynamicCamera extends StructureObject implements Camera{
 				quadCorners[0].setX(monitor.getXMin());
 				quadCorners[3].setX(monitor.getXMin());
 				double missingPortion = (world.getXMin() - r.getXMin()) / r.getSize().x;
-				textureValues[0].setX((texture != null ? texture.getWidth() * missingPortion : missingPortion));
-				textureValues[3].setX((texture != null ? texture.getWidth() * missingPortion : missingPortion));
+				textureValues[0].setX((texture != null ? missingPortion : missingPortion));
+				textureValues[3].setX((texture != null ? missingPortion : missingPortion));
 			}
 			if(r.getYMax() > world.getYMax()){
 				quadCorners[0].setY(monitor.getYMax());
@@ -386,8 +394,8 @@ public class DynamicCamera extends StructureObject implements Camera{
 				quadCorners[2].setY(monitor.getYMin());
 				quadCorners[3].setY(monitor.getYMin());
 				double missingPortion = - (r.getYMin() - world.getYMin()) / r.getSize().y;
-				textureValues[0].setY((texture != null ? texture.getHeight() *  missingPortion : (1 / missingPortion)));
-				textureValues[1].setY((texture != null ? texture.getHeight() * missingPortion : (1 / missingPortion)));
+				textureValues[0].setY((texture != null ? missingPortion : (1 / missingPortion)));
+				textureValues[1].setY((texture != null ? missingPortion : (1 / missingPortion)));
 			} 
 		}
 		
@@ -395,7 +403,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 		Quad quad = new Quad(quadCorners, textureValues);
 		quad.texture = visibleObject.getTextureInfo().namePath;
 		quad.color = visibleObject.getColor();
-		quads.add(quad);
+		getQuadList().add(quad);
 	}
 	
 	@Override
@@ -448,12 +456,12 @@ public class DynamicCamera extends StructureObject implements Camera{
 		return real;
 	}
 	@Override
-	public void handleMouseWheel(int change, Location locationOnScreen) {
+	public void handleMouseWheel(int change, Location locationOnScreen){
 		handleMouseWheel(change);
 		if(centralZoom)return;
 		Location locChange = getWorldLocation(locationOnScreen);
 		locChange.revert(world.getCenter());
-		locChange.magnify(!holdPointZoom ? zoomMouseImpact : (change > 0 ? defaultZoomAmount.x - 1 : -(defaultZoomAmount.y - 1)));
+		locChange.magnify(!holdPointZoom ? zoomMouseImpact : (change < 0 ? defaultZoomAmount.x - 1 : -(defaultZoomAmount.y - 1)));
 		moveWorld(locChange);
 	}
 	@Override
@@ -483,5 +491,9 @@ public class DynamicCamera extends StructureObject implements Camera{
 			moveWorld(0, getSpeed()*3);
 			break;
 		}
+	}
+	@Override
+	public ArrayList<Quad> getQuadList() {
+		return quads;
 	}
 }

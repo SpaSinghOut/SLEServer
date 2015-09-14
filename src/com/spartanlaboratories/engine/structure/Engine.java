@@ -44,7 +44,6 @@ public class Engine{
 	public ArrayList<Controller> controllers = new ArrayList<Controller>();
 	public ArrayList<Missile> missiles = new ArrayList<Missile>();
 	public ArrayList<Actor> allActors = new ArrayList<Actor>();
-	ArrayList<MPH> clients = new ArrayList<MPH>();
 	public Map map; //DO NOT INITIALIZE HERE, will not work due to opengl context requirement
 	public int tickCount;
 	/**
@@ -61,33 +60,35 @@ public class Engine{
 	private static int tickRate;
 	private static long period;
 	public ArrayList<VisibleObject> visibleObjects = new ArrayList<VisibleObject>();
-	public TypeHandler<StructureObject> typeHandler;
+	public TypeHandler<StructureObject> typeHandler = new TypeHandler<StructureObject>();
 	private final Location wrap = new Location(3000,2000);
 	public byte numConnections;
 	private ArrayList<GameObject> deleteThis = new ArrayList<GameObject>();
 	static long time;
-	public void goMulti(Map map){
-		try ( 
-				// The server socket that the client is going to connect to
-			    ServerSocket server = new ServerSocket(port);
+	private boolean noThread;
+	ServerSocket server;
+	public void goMulti(Map map, int numPlayers){
+		try{
+			noThread = true;
+			// The server socket that the client is going to connect to
+		    server = new ServerSocket(port);
+			typeHandler.newEntry("map", map);
+			this.map = (Map) typeHandler.typeGetter.get("map");
+			for(int i = 0; i < numPlayers; i++){
 				// Waits for and registers a connected client
 			    Socket client = server.accept();
 				// Writes to the aforementioned client
-			    PrintWriter out =
-			        new PrintWriter(client.getOutputStream(), true);
+			    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 				// Reads from the aforementioned client
-			    BufferedReader in = new BufferedReader(
-			        new InputStreamReader(client.getInputStream()));
-			){
+			    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 				HumanClient human = new HumanClient(this);
-				new MPH(client, out, in, human);
-				initializeOpenGL();
-				typeHandler = new TypeHandler<StructureObject>();
-				typeHandler.newEntry("map", map);
-				init();
-			}catch(IOException e){
-				
+				new ClientListener(client, out, in, human);
+				//initializeOpenGL();
 			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		init();
 	}
 	private static class ClientThread implements Runnable{
 		PrintWriter out;
@@ -98,10 +99,9 @@ public class Engine{
 				out = new PrintWriter(socket.getOutputStream());
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				human = new HumanClient(engine);
-				new MPH(socket, out, in, human);
-				engine.map.forConnected(human);
+				new ClientListener(socket, out, in, human);
 			}catch(IOException e){
-				
+				e.printStackTrace();
 			}
 		}
 		@Override
@@ -140,21 +140,19 @@ public class Engine{
 		
 		// Other shit
 		initializeOpenGL();
-		typeHandler = new TypeHandler<StructureObject>();
 		typeHandler.newEntry("map", map);
+		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		Thread server = new Thread(new Server(this));
 		server.setPriority(Thread.MIN_PRIORITY);
 		server.start();
-		run();
 		// End other shit
 	}
 	public void goSingle(Map map){
 		HumanSingle human = new HumanSingle(this);
-		typeHandler = new TypeHandler<StructureObject>();
 		typeHandler.newEntry("map", map);
-		running = true;
+		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
 	}
 	private void initializeOpenGL(){
@@ -183,19 +181,25 @@ public class Engine{
 		}
 	}
 	private void init(){
-		running = true;
 		ambientUpdate = false;
 		tracker = new Tracker(this);
 		tracker.setEntityTracked(Tracker.FUNC_TICK, true);
 		SLEXMLException.engine = this;
 		setTickRate(60);
-		map = (Map) typeHandler.typeGetter.get("map");
 		map.init();
 	}
 	private void finish(){
+		System.out.println("terminating");
 		tracker.closeWriter();
+		if(server != null)
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
-	private void run(){
+	public void run(){
+		running = true;
 		time = System.nanoTime();
 		while(running){
 			if(System.nanoTime() > time + period && !pause){
@@ -203,6 +207,8 @@ public class Engine{
 				tickCount++;
 				tick();
 			}
+			else if(noThread)for(Human h:Human.players)h.poll();
+			
 		}
 		finish();
 	}

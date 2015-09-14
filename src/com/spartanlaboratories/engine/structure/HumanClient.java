@@ -4,7 +4,7 @@ import com.spartanlaboratories.engine.game.Alive;
 import com.spartanlaboratories.engine.game.VisibleObject;
 
 public class HumanClient extends Human{
-	MPH client;
+	ClientListener client;
 	public HumanClient(Engine engine) {
 		super(engine, Alive.Faction.RADIANT);
 	}
@@ -39,9 +39,11 @@ public class HumanClient extends Human{
 	@Override
 	public void processQuadInfo() {
 		for(Camera c: cameras){
-			for(VisibleObject vo: c.getQualifiedObjects())c.generateQuad(vo);
-			for(Quad q: c.quads)sendQuad(q);
-			c.quads.clear();
+			for(VisibleObject vo: c.getQualifiedObjects())
+				c.generateQuad(vo);
+			for(Quad q: c.getQuadList())
+				sendQuad(q);
+			c.getQuadList().clear();
 		}
 		client.out.println("end");
 	}

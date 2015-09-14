@@ -22,7 +22,7 @@ public class VisibleObject extends GameObject{
 	public boolean resetTexture;
 	private double height;
 	private double width;
-	private Texture texture;
+	private String texture;
 	private final Rectangle areaCovered = new Rectangle(new Location(), 0, 0);
 	ArrayList<Effect> effects = new ArrayList<Effect>(); // Maybe unused
 	private TextureInfo textureInfo = new TextureInfo();
@@ -144,14 +144,14 @@ public class VisibleObject extends GameObject{
 	 * 
 	 * @return - This object's texture.
 	 */
-	public Texture getTexture(){
-		Texture rTexture = texture;
+	public String getTexture(){
+		/*String rTexture = texture;
 		try {
 			rTexture = texture == null ? TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/black.jpg")) : texture;
 		} catch (IOException e) {
 			System.out.println("getTexture exception");
-		}
-		return rTexture;
+		}*/
+		return texture;
 	}
 	/**
 	 * Returns a copy of this visible object. Night not work perfectly if this object contains 
@@ -211,15 +211,9 @@ public class VisibleObject extends GameObject{
 				setTexture(Constants.versionString + "/res/dire tower.png");
 	}
 	private void updateTexture(){
-		try {
-			texture = TextureLoader.getTexture(textureInfo.textureFormat.toUpperCase(), ResourceLoader.getResourceAsStream(textureInfo.namePath));
-		}catch (IOException e) {
-			System.out.println("A texture was set improperly");
-			e.printStackTrace();
-		}finally{
-			resetTexture = false;
-			textureInfo.updateNeeded = false;
-		}
+		texture = textureInfo.namePath;//TextureLoader.getTexture(textureInfo.textureFormat.toUpperCase(), ResourceLoader.getResourceAsStream(textureInfo.namePath));
+		resetTexture = false;
+		textureInfo.updateNeeded = false;
 	}
 	public void trashComponents(){}
 	public void setSize(double width, double height){
@@ -237,7 +231,7 @@ public class VisibleObject extends GameObject{
 	public Location getSize(){
 		return new Location(getHeight(), getWidth());
 	}
-	public Texture getTextureNE() {
+	public String getTextureNE() {
 		return texture;
 	}
 }

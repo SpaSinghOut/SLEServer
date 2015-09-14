@@ -8,19 +8,21 @@ import java.net.Socket;
 
 import com.spartanlaboratories.engine.util.Location;
 
-class MPH{
+class ClientListener{
 	Socket client;
 	PrintWriter out;
 	BufferedReader in;
 	HumanClient human;
 	int quadInfoLocation;
-	MPH(Socket client, PrintWriter out, BufferedReader in, HumanClient human){
+	ClientListener(Socket client, PrintWriter out, BufferedReader in, HumanClient human){
 		this.client = client;
 		this.out = out;
 		this.in = in;
 		this.human = human;
 		human.client = this;
 		quadInfoLocation = 0;
+		out.println("load texture");
+		out.println("res/test.png");
 		try{while(!in.ready());}
 		catch(IOException e){}
 		readIncomingData();

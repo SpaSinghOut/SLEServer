@@ -33,6 +33,8 @@ public abstract class Map extends StructureObject{
 	public ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
 	public int spawnPeriod;
 	public boolean spawnRune;
+	private ArrayList<Controller> playersOnLevel = new ArrayList<Controller>();
+	protected boolean levelStarted;
 	public Map(Engine engine){
 		super(engine);
 		//generateTerrain();
@@ -57,7 +59,9 @@ public abstract class Map extends StructureObject{
 	public void resetNumPoints(){
 		numberOfMovePoints = 0;
 	}
-	public abstract void init();
+	public void init(){
+		for(Controller c: playersOnLevel)playerStartAction(c);
+	}
 	/**
 	 * When invoked goes through the list of all Spawn Points contained by this map and makes each one spawn one unit that it was set to spawn.
 	 */
@@ -66,7 +70,11 @@ public abstract class Map extends StructureObject{
 	}
 	protected void generateBorders(){}
 	protected  void initializeSpawnPoints(){}
-	public abstract void forConnected(Human human);
+	public void forConnected(Controller controller){
+		playersOnLevel.add(controller);
+		if(levelStarted)playerStartAction(controller);
+	}
+	protected abstract void playerStartAction(Controller controller);
 	protected abstract void update();
 	/**
 	 * Creates a new {@link SpawnPoint} that will spawn creeps of the passed in faction at the passed in location.
