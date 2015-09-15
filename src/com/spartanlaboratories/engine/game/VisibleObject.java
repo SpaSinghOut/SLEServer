@@ -4,11 +4,6 @@ package com.spartanlaboratories.engine.game;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import org.newdawn.slick.util.ResourceLoader;
-
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
 import com.spartanlaboratories.measurements.Rectangle;
@@ -30,6 +25,9 @@ public class VisibleObject extends GameObject{
 		QUAD, TRI,;
 	}
 	public class TextureInfo{
+		TextureInfo(){
+			namePath = null;
+		}
 		public boolean updateNeeded;
 		public String textureFormat;
 		public String namePath;
@@ -122,7 +120,7 @@ public class VisibleObject extends GameObject{
 		return true;
 	}
 	/**
-	 * Experimental, notify if doesn't work. Attempts to set the texture of this object 
+	 * Attempts to set the texture of this object 
 	 * by using the string that was passed in as the location and name of the file.
 	 * <p>
 	 * Example: if the full name of the file (including the extension) is "test.jpg" and it is inside a folder named "resources" then the string
@@ -154,7 +152,7 @@ public class VisibleObject extends GameObject{
 		return texture;
 	}
 	/**
-	 * Returns a copy of this visible object. Night not work perfectly if this object contains 
+	 * Returns a copy of this visible object. Might not work perfectly if this object contains 
 	 * instances of other objects as those objects themselves might get referenced and not copied.
 	 */
 	public VisibleObject copy(){
@@ -200,15 +198,15 @@ public class VisibleObject extends GameObject{
 		if(this.getClass() == Hero.class){
 			String heroNameString = ((Hero)this).heroType.toString().toLowerCase();
 			if(heroNameString != "none")
-				setTexture(Constants.versionString + "/res/" + heroNameString + ".jpg");
+				setTexture("/res/" + heroNameString + ".jpg");
 		}
 		else if(this.getClass() == Creep.class)
-			setTexture(Constants.versionString + "/res/radiant creep.png");
+			setTexture("/res/radiant creep.png");
 		else if(this.getClass() == Tower.class)
 			if(((Tower)this).faction == Alive.Faction.RADIANT)
-				setTexture(Constants.versionString + "/res/radiant tower.jpg");
+				setTexture("/res/radiant tower.jpg");
 			else if(((Tower)this).faction == Alive.Faction.DIRE)
-				setTexture(Constants.versionString + "/res/dire tower.png");
+				setTexture("/res/dire tower.png");
 	}
 	private void updateTexture(){
 		texture = textureInfo.namePath;//TextureLoader.getTexture(textureInfo.textureFormat.toUpperCase(), ResourceLoader.getResourceAsStream(textureInfo.namePath));

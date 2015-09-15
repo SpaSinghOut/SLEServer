@@ -28,6 +28,7 @@ public abstract class Human extends Controller{
 	public abstract void poll();
 	public abstract void processQuadInfo();
 	public abstract void out(String message);
+	public abstract void notifyClient(String message);
 	public Location getMouseLocation(){
 		return mouseLocation;
 	}

@@ -3,11 +3,7 @@ package com.spartanlaboratories.engine.structure;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import org.newdawn.slick.opengl.Texture;
-
 import com.spartanlaboratories.engine.game.Actor;
-import com.spartanlaboratories.engine.game.Alive;
-import com.spartanlaboratories.engine.game.Hero;
 import com.spartanlaboratories.engine.game.VisibleObject;
 import com.spartanlaboratories.engine.util.Location;
 /**
@@ -61,6 +57,7 @@ public class StandardCamera extends StructureObject implements Camera{
 	 * the game engine
 	 * @param worldLocation
 	 * the location in the "real" world at which the camera is located
+	 * @param screenSize the size of the screen
 	 */
 	public StandardCamera(Engine engine, Location worldLocation, Location screenSize){
 		super(engine);
@@ -177,7 +174,7 @@ public class StandardCamera extends StructureObject implements Camera{
 	}
 	@Override
 	public Actor unitAt(Location monitorLocation){
-		Location location = getWorldLocation(monitorLocation);
+		Location location = getLocationInWorld(monitorLocation);
 		final int searchRange = 200;
 		ArrayList<Actor> actors = engine.qt.retriveActors(location.x - searchRange, location.y - searchRange, location.x + searchRange, location.y + searchRange);
 		for(Actor a: actors)
@@ -205,7 +202,7 @@ public class StandardCamera extends StructureObject implements Camera{
 			resetCameraSpeed();
 	}
 	@Override
-	public Location getWorldLocation(Location locationOnScreen) {
+	public Location getLocationInWorld(Location locationOnScreen) {
 		return new Location(worldLocation.x + locationOnScreen.x - monitorLocation.x,
 							worldLocation.y + locationOnScreen.y - monitorLocation.y);
 	}

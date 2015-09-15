@@ -6,7 +6,6 @@ import com.spartanlaboratories.engine.game.Actor;
 import com.spartanlaboratories.engine.game.Alive;
 import com.spartanlaboratories.engine.game.VisibleObject;
 import com.spartanlaboratories.engine.util.Location;
-import com.spartanlaboratories.measurements.Rectangle;
 
 /**<b> One of the most important classes in the entire engine: The Quadtree</b>
  * <p>

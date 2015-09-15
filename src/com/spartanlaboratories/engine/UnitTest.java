@@ -30,7 +30,7 @@ public class UnitTest extends Map{
 	}
 	@Override
 	protected void playerStartAction(Controller controller) {
-		Hero<Spell> hero = new Hero<Spell>(engine, Hero.HeroType.RAZOR, controller);
+		Hero<Spell> hero = new Hero<Spell>(engine, controller);
 		hero.setTexture("res/test.png");
 		hero.setSize(60,60);
 		hero.setLocation(0,0);
@@ -44,18 +44,18 @@ public class UnitTest extends Map{
 		
 		DynamicCamera mainCamera = new DynamicCamera(engine, ((Human)controller).getScreenSize());
 		
-		mainCamera.setWorldLocation(new Location(0,0));
+		mainCamera.world.setLocation(new Location(0,0));
 		//mainCamera.setDrawArea(new Rectangle(new Location(1000,500),new Location(1000,500)));
 		//mainCamera.setMonitorSize(new Location(1000,500));
-		mainCamera.setDefaultZoomAmount(1.1);
-		mainCamera.followMouseOnZoom(true);
+		mainCamera.zoom.setDefaultZoomAmount(1.1);
+		mainCamera.zoom.followMouseOnZoom(true);
 		//mainCamera.setZoomMouseImpact(.1);
-		mainCamera.holdPointOnZoom(true);
-		mainCamera.setZoomBounds(0.1,10);
+		mainCamera.zoom.holdPointOnZoom(true);
+		mainCamera.zoom.setZoomBounds(0.1,10);
 		
-		mainCamera.setCameraAcceleration(2);
-		mainCamera.setCameraSpeed(30);
-		mainCamera.setPanningRange(60);
+		mainCamera.pan.setCameraAcceleration(2);
+		mainCamera.pan.setCameraSpeed(30);
+		mainCamera.pan.setPanningRange(60);
 		
 		((Human)controller).addCamera(mainCamera);
 		new Spell("fireball",hero);

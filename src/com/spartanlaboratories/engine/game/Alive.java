@@ -3,11 +3,8 @@ package com.spartanlaboratories.engine.game;
 import java.util.ArrayList;
 
 import com.spartanlaboratories.engine.structure.Camera;
-import com.spartanlaboratories.engine.structure.StandardCamera;
 import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
-import com.spartanlaboratories.engine.structure.HumanClient;
-import com.spartanlaboratories.engine.structure.Util;
 import com.spartanlaboratories.engine.util.Location;
 
 public class Alive extends Actor{
@@ -164,7 +161,7 @@ public class Alive extends Actor{
 			if(b.activationTrigger == Buff.TriggerType.ONBEINGATTACKED)
 				b.trigger(attacker);
 		if(100d * Math.random() > getStat(Constants.evasion)){
-			attacker.hit(this);getHit(attacker);
+			attacker.hit(this);
 		}
 	}
 	protected void hit(Alive attacking){
@@ -264,6 +261,9 @@ public class Alive extends Actor{
 		}
 		return 0;
 	}
+	public void setRanged(boolean isRanged){
+		missile = isRanged;
+	}
 	public double getStat(int stat){
 		switch(stat){
 		case Constants.health:
@@ -288,7 +288,7 @@ public class Alive extends Actor{
 		for(Buff b: getBuffs())
 			if(b.activationTrigger == Buff.TriggerType.ONDEATH)
 				b.trigger(attackTarget);
-		ArrayList<Hero> receivers = new ArrayList<Hero>();
+		ArrayList<Hero<Ability>> receivers = new ArrayList<Hero<Ability>>();
 		for(Alive a : Alive.allAlives){
 			if(a.getClass() == Hero.class 
 			&& a.faction != this.faction 
@@ -489,11 +489,11 @@ public class Alive extends Actor{
 		}
 	}
 	private void attackOrientedInit() {
-	permissions[Constants.autoAttackAllowed] = true;
-	changeStat(Constants.baseAttackTime, 1.7);
-	changeStat(Constants.baseAttackSpeed, 100);
-	changeStat(Constants.baseAnimationTime, 1);
-	this.resetAllAttackCDs();
+		permissions[Constants.autoAttackAllowed] = true;
+		changeStat(Constants.baseAttackTime, 1.7);
+		changeStat(Constants.baseAttackSpeed, 100);
+		changeStat(Constants.baseAnimationTime, 1);
+		this.resetAllAttackCDs();
 	}
 	private void configureAttack(){
 		needToMove = attackTarget == null && target != null;

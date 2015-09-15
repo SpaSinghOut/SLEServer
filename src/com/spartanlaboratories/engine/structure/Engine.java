@@ -10,10 +10,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-
 import com.spartanlaboratories.engine.game.Actor;
 import com.spartanlaboratories.engine.game.Alive;
 import com.spartanlaboratories.engine.game.Aura;
@@ -139,7 +135,6 @@ public class Engine{
 	public void goMultiTest(Map map){
 		
 		// Other shit
-		initializeOpenGL();
 		typeHandler.newEntry("map", map);
 		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
@@ -150,26 +145,10 @@ public class Engine{
 		// End other shit
 	}
 	public void goSingle(Map map){
-		HumanSingle human = new HumanSingle(this);
+		new HumanSingle(this);
 		typeHandler.newEntry("map", map);
 		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
-	}
-	private void initializeOpenGL(){
-		try {
-			Display.create();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-		}
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 	public class TypeHandler<Type extends StructureObject>{
 		private HashMap<String, StructureObject> typeGetter = new HashMap<String,StructureObject>();

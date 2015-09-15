@@ -8,7 +8,7 @@ public class Aura<Element extends Buff> extends GameObject{
 	Element toBePlaced;
 	AffectedUnits affectedUnits;
 	int intensity;
-	public static ArrayList<Aura> auras = new ArrayList<Aura>();
+	public static ArrayList<Aura<? extends Buff>> auras = new ArrayList<Aura<? extends Buff>>();
 	public Aura(Alive setHolder, double setRadius, Element setTBP, AffectedUnits au, int setIntensity){
 		super(setHolder.engine);
 		holder = setHolder;

@@ -4,7 +4,7 @@ import com.spartanlaboratories.engine.game.Alive;
 import com.spartanlaboratories.engine.game.VisibleObject;
 
 public class HumanClient extends Human{
-	ClientListener client;
+	public ClientListener client;
 	public HumanClient(Engine engine) {
 		super(engine, Alive.Faction.RADIANT);
 	}
@@ -46,6 +46,10 @@ public class HumanClient extends Human{
 			c.getQuadList().clear();
 		}
 		client.out.println("end");
+	}
+	@Override
+	public void notifyClient(String message) {
+		client.out.println(message);
 	}
 	
 }

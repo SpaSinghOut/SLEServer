@@ -47,6 +47,11 @@ public class HumanSingle extends Human{
 	public void out(String message) {
 		
 	}
+	@Override
+	public void notifyClient(String message) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 class SinglePlayerHandler{

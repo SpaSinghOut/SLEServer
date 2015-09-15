@@ -11,7 +11,6 @@ import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.structure.HumanClient;
 import com.spartanlaboratories.engine.structure.SLEImproperInputException;
-import com.spartanlaboratories.engine.structure.Util;
 import com.spartanlaboratories.engine.util.Location;
 
 /**
@@ -144,7 +143,7 @@ public abstract class Ability implements Castable{
 	/**
 	 * The Hero that owns this ability.
 	 */
-	public Hero owner;
+	public Hero<? extends Ability> owner;
 	/**
 	 * The amount of time remaining until this ability is once again off of cooldown.
 	 */
@@ -157,6 +156,7 @@ public abstract class Ability implements Castable{
 	 * The amount of time remaining until this ability is no longer active.
 	 */
 	public int durationLeft;							//How much time this ability has left until it ends
+	@SuppressWarnings("unused")
 	private Alive target;						//If this ability targets an Alive what is that target
 	private Location targetLocation;			//and what is that Alive's location
 	public int level;									//The amount of skill points that were put into this ability
@@ -215,7 +215,7 @@ public abstract class Ability implements Castable{
 			if(owner.owner.getClass() == HumanClient.class){
 				HumanClient human = ((HumanClient)owner.owner);
 				Location loc = human.getMouseLocation();
-				targetLocation.duplicate(human.coveringCamera(loc).getWorldLocation(loc));
+				targetLocation.duplicate(human.coveringCamera(loc).getLocationInWorld(loc));
 			}
 			activate(targetLocation);
 			state = State.DOWN;
@@ -231,7 +231,7 @@ public abstract class Ability implements Castable{
 				if(owner.owner.getClass() == HumanClient.class){
 					HumanClient human = ((HumanClient)owner.owner);
 					Location loc = human.getMouseLocation();
-					targetLocation.duplicate(human.coveringCamera(loc).getWorldLocation(loc));
+					targetLocation.duplicate(human.coveringCamera(loc).getLocationInWorld(loc));
 				}
 				state = State.DOWN;
 			}
@@ -256,7 +256,6 @@ public abstract class Ability implements Castable{
 		if(abilityStats.castType == Castable.CastType.ALIVETARGET)target = (Alive) owner.owner.selectedUnit;
 		cast();
 	}
-	@SuppressWarnings("incomplete-switch")
 	private void activate(boolean b){
 		owner.changeStat(Constants.mana, -(abilityStats.manaCost));
 		cast();

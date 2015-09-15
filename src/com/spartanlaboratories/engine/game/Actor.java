@@ -1,8 +1,9 @@
 package com.spartanlaboratories.engine.game;
 
+import java.util.ArrayList;
+
 import com.spartanlaboratories.engine.structure.Camera;
 import com.spartanlaboratories.engine.structure.StandardCamera;
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Controller;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
@@ -197,7 +198,7 @@ public class Actor extends VisibleObject implements AcceptsInput{
 	}
 	@Override
 	public void rightClick(Location locationOnScreen, Camera camera) {
-		setTarget(camera.getWorldLocation(locationOnScreen));
+		setTarget(camera.getLocationInWorld(locationOnScreen));
 	}
 	@Override
 	public void leftClick(Location locationOnScreen, StandardCamera camera) {
@@ -211,7 +212,9 @@ public class Actor extends VisibleObject implements AcceptsInput{
 	}
 	private boolean anythingInTheWay() {
 		boolean selfCheck, collisionCheck;
-		for(VisibleObject a : engine.qt.retrieveBox(getLocation().x - getWidth() * 2,getLocation().y - getHeight() * 2,getLocation().x + getWidth() * 2,getLocation().y + getHeight() * 2)){
+		ArrayList<VisibleObject> list = engine.qt.retrieveBox(getLocation().x - getWidth() * 2,getLocation().y - getHeight() * 2,getLocation().x + getWidth() * 2,getLocation().y + getHeight() * 2);
+		list.addAll(TerrainObject.allTerrain);
+		for(VisibleObject a : list){
 			selfCheck = a != this;
 			collisionCheck = engine.util.checkForCollision(this, a);
 			if(a.active && a.solid && selfCheck && collisionCheck)

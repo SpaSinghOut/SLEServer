@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
-import com.spartanlaboratories.engine.structure.Util;
 import com.spartanlaboratories.engine.util.Location;
 
 public class Tower extends Alive {

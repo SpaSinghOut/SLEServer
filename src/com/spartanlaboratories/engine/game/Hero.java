@@ -1,6 +1,5 @@
 package com.spartanlaboratories.engine.game;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.spartanlaboratories.engine.structure.SLEImproperInputException;
@@ -8,7 +7,6 @@ import com.spartanlaboratories.engine.structure.StandardCamera;
 import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Controller;
 import com.spartanlaboratories.engine.structure.Engine;
-import com.spartanlaboratories.engine.structure.Util;
 import com.spartanlaboratories.engine.util.Location;
 
 public class Hero<Element extends Ability> extends Alive{
@@ -29,12 +27,11 @@ public class Hero<Element extends Ability> extends Alive{
 			range = setRange;
 		}
 	}
-	public Hero(Engine engine, HeroType setHeroType, Controller controller) {
+	public Hero(Engine engine, Controller controller) {
 		super(engine, controller.faction);
 		manaBar = new VisibleObject(engine);
 		manaBar.setColor("blue");
-		setWidth(35);
-		setHeight(35);
+		setSize(35,35);
 		defaultColor = "white";
 		setColor(defaultColor);
 		shape = Actor.Shape.QUAD;
@@ -44,14 +41,9 @@ public class Hero<Element extends Ability> extends Alive{
 		childSetsOwnMovement = false;
 		initStats();
 		inventory = new ItemList(inventorySize, ItemList.Type.INVENTORY, this);
-		initHeroType(HeroType.RAZOR);
-		try {
-			setTexture();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		controller.addUnit(this);
 	}
+	@Deprecated
 	public void initHeroType(HeroType setHeroType){
 		heroType = setHeroType;
 		changeStat(Constants.mana, getStat(Constants.maxMana) - getStat(Constants.mana));
@@ -112,7 +104,7 @@ public class Hero<Element extends Ability> extends Alive{
 		ArrayList<Element> abilities = this.abilities;
 		return abilities;
 	}
-	public void copyTo(Hero hero){
+	public void copyTo(Hero<Element> hero){
 		hero.equippedSpell = equippedSpell;
 		hero.inventorySize = inventorySize;
 		hero.numberOfAbilities = numberOfAbilities;
@@ -138,9 +130,11 @@ public class Hero<Element extends Ability> extends Alive{
 		changeStat(Constants.manaRegen, 1);
 		changeStat(Constants.healthRegen, 0.1);
 		changeStat(Constants.experienceGiven, 200);
-		changeStat(Constants.startingDamage, 0);
+		changeStat(Constants.startingDamage, 30);
 		changeStat(Constants.abilityPoints, 1);
-		changeStat(Constants.attackSpeed, 0);
+		changeStat(Constants.attackSpeed, 400);
+		changeStat(Constants.baseAnimationTime,1);
+		changeStat(Constants.baseAttackTime,1);
 	}
 	private void debug(){
 		System.out.println("Hero: " + "Attack state: " + getAttackState());

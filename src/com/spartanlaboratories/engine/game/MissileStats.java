@@ -7,12 +7,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import com.spartanlaboratories.engine.game.Ability.AbilityStats;
-import com.spartanlaboratories.engine.game.Ability.LevellingType;
-import com.spartanlaboratories.engine.game.Castable.CastType;
-import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.structure.SLEXMLException;
-import com.spartanlaboratories.engine.structure.Util;
 
 class MissileStats{
 	boolean homing;

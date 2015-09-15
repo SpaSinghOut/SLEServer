@@ -1,17 +1,15 @@
 package com.spartanlaboratories.engine.structure;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.spartanlaboratories.engine.util.Location;
 
 class ClientListener{
 	Socket client;
-	PrintWriter out;
-	BufferedReader in;
+	public PrintWriter out;
+	public BufferedReader in;
 	HumanClient human;
 	int quadInfoLocation;
 	ClientListener(Socket client, PrintWriter out, BufferedReader in, HumanClient human){
@@ -21,8 +19,6 @@ class ClientListener{
 		this.human = human;
 		human.client = this;
 		quadInfoLocation = 0;
-		out.println("load texture");
-		out.println("res/test.png");
 		try{while(!in.ready());}
 		catch(IOException e){}
 		readIncomingData();

@@ -13,7 +13,7 @@ public interface Camera {
 	public default void clearQuads(){
 		getQuadList().clear();
 	}
-	public Location getWorldLocation(Location locationOnScreen);
+	public Location getLocationInWorld(Location locationOnScreen);
 	public ArrayList<VisibleObject> getQualifiedObjects();
 	public Actor unitAt(Location monitorLocation);
 	public void handleClick(int mouseButton);

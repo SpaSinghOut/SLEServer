@@ -2,10 +2,8 @@ package com.spartanlaboratories.engine.structure;
 
 import java.util.ArrayList;
 
-import com.spartanlaboratories.engine.game.Ability;
 import com.spartanlaboratories.engine.game.Actor;
 import com.spartanlaboratories.engine.game.Alive;
-import com.spartanlaboratories.engine.game.Hero;
 import com.spartanlaboratories.engine.game.Alive.Faction;
 /**
  * A class that controls units. Can be a human player or AI

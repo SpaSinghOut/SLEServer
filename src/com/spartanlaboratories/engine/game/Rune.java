@@ -1,7 +1,6 @@
 package com.spartanlaboratories.engine.game;
 
 import com.spartanlaboratories.engine.structure.Engine;
-import com.spartanlaboratories.engine.structure.Util;
 
 public class Rune extends VisibleObject{
 	PowerType powerType;

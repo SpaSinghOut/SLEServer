@@ -17,8 +17,7 @@ public class Location extends com.spartanlaboratories.measurements.Location{
 	 * @param setX the new value of the horizontal coordinate
 	 * @param setY the new value of the vertical coordinate
 	 * @see #Location()
-	 * @see #Location(Location)
-	 * @see #Location(Location, StandardCamera)
+	 * @see #Location(com.spartanlaboratories.measurements.Location)
 	 */
 	public Location(double setX, double setY){
 		super(setX,setY);
@@ -29,7 +28,6 @@ public class Location extends com.spartanlaboratories.measurements.Location{
 	 * @param relativeLocation the location whose coordinates will be copied
 	 * @see #Location()
 	 * @see #Location(double, double)
-	 * @see #Location(Location, StandardCamera)
 	 */
 	public Location(com.spartanlaboratories.measurements.Location relativeLocation){
 		super(relativeLocation);
@@ -41,16 +39,15 @@ public class Location extends com.spartanlaboratories.measurements.Location{
 	 * @param camera the camera that is viewing the location
 	 * @see #Location() 
 	 * @see #Location(double, double) 
-	 * @see #Location(Location)
+	 * @see #Location(com.spartanlaboratories.measurements.Location)
 	 */
 	public Location(com.spartanlaboratories.measurements.Location locationOnScreen, StandardCamera camera){
 		setFromScreen(locationOnScreen, camera);
 	}
 	/**
 	 * Creates a {@link Location} with the coordinates (0,0)
-	 * @see #Location(Location)
+	 * @see #Location(com.spartanlaboratories.measurements.Location)
 	 * @see #Location(double, double)
-	 * @see #Location(Location, StandardCamera)
 	 */
 	public Location(){}
 	/**
@@ -85,8 +82,6 @@ public class Location extends com.spartanlaboratories.measurements.Location{
 	 * @deprecated
 	 * @param locationOnScreen the location on a screen whose "real" world coordinates will be assigned to this location
 	 * @param camera the camera that is viewing the passed location on screen
-	 * @see #Location(Location, StandardCamera)
- 	 * @see #getLocationInWorld(Location, StandardCamera)
 	 */
 	public void setFromScreen(com.spartanlaboratories.measurements.Location locationOnScreen, StandardCamera camera){
 		setCoords(camera.worldLocation.x + locationOnScreen.x - camera.monitorLocation.x,
