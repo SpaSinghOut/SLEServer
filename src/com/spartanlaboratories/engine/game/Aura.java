@@ -61,4 +61,13 @@ public class Aura<Element extends Buff> extends GameObject{
 		
 	}
 	public void update() {}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.engine.game.GameObject#addToMap()
+	 */
+	@Override
+	protected void addToMap() {
+		values.put("radius", String.valueOf(radius));
+		values.put("intensity", String.valueOf(intensity));
+		values.put("affected", String.valueOf(affectedUnits));
+	}
 }

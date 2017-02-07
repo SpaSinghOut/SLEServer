@@ -1,7 +1,12 @@
 package com.spartanlaboratories.engine.structure;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.spartanlaboratories.engine.game.Alive;
+import com.spartanlaboratories.engine.game.Hero;
 import com.spartanlaboratories.engine.game.VisibleObject;
+import com.spartanlaboratories.util.Constants;
 
 public class HumanClient extends Human{
 	public ClientListener client;
@@ -37,7 +42,7 @@ public class HumanClient extends Human{
 		
 	}
 	@Override
-	public void processQuadInfo() {
+	protected void processQuadInfo() {
 		for(Camera c: cameras){
 			for(VisibleObject vo: c.getQualifiedObjects())
 				c.generateQuad(vo);
@@ -47,9 +52,39 @@ public class HumanClient extends Human{
 		}
 		client.out.println("end");
 	}
+	
+	@Override
+	protected void sendUnitInfo(){
+		if(selectedUnit != null){
+			HashMap<String, String> values = selectedUnit.getMap();
+			client.out.println("unitinfo");
+			client.out.println(values.keySet().size());
+			for(String key: values.keySet()){
+				client.out.println(key);
+				client.out.println(values.get(key));
+			}
+		}
+	}
+	
 	@Override
 	public void notifyClient(String message) {
 		client.out.println(message);
+	}
+	/**
+	 * 
+	 * @param buttonData
+	 */
+	void receiveButtonInput(String[] buttonData) {
+		switch(buttonData[0].toLowerCase()){
+		case "ability":
+			if(Hero.class.isAssignableFrom(selectedUnit.getClass()))
+				((Hero)selectedUnit).getAbility(Integer.parseInt(buttonData[1])).cast();
+			break;
+		default:
+			System.out.print("Unable to process button data: ");
+			System.out.println(buttonData);
+			break;
+		}
 	}
 	
 }

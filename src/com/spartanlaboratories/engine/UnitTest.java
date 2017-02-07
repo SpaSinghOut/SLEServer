@@ -14,8 +14,19 @@ public class UnitTest extends Map{
 	private static final int numberOfPlayers = 1;
 	public static void main(String[] args){
 		Engine engine = new Engine();
+		testMultiplayer(engine);
+		//testSinglePlayer(engine);
+	}
+	private static void testMultiplayer(Engine engine){
 		engine.goMulti(new UnitTest(engine),numberOfPlayers);
 		//engine.goMultiTest(new UnitTest(engine));
+		start(engine);
+	}
+	private static void testSinglePlayer(Engine engine){
+		engine.goSingle(new UnitTest(engine));
+		start(engine);
+	}
+	private static void start(Engine engine){
 		engine.tracker.initialize(Tracker.TrackerPreset.PRESET_TICK);
 		engine.run();
 	}
@@ -40,7 +51,7 @@ public class UnitTest extends Map{
 		if(!Human.class.isAssignableFrom(controller.getClass()))return;
 		
 		//Waits until the human has information about the screen size
-		while(((Human)controller).getScreenSize().equals(new Location()));
+		pauseUntilScreenReady((Human)controller);
 		
 		DynamicCamera mainCamera = new DynamicCamera(engine, ((Human)controller).getScreenSize());
 		

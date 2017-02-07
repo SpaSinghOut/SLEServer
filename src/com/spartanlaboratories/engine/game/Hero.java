@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 import com.spartanlaboratories.engine.structure.SLEImproperInputException;
 import com.spartanlaboratories.engine.structure.StandardCamera;
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Controller;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 public class Hero<Element extends Ability> extends Alive{
 	private int inventorySize = 6;
 	int numberOfAbilities = 3;
-	public ArrayList<Element> abilities = new ArrayList<Element>();
+	ArrayList<Element> abilities = new ArrayList<Element>();
 	public HeroType heroType;
 	VisibleObject manaBar;
 	boolean initialized;
@@ -46,9 +46,9 @@ public class Hero<Element extends Ability> extends Alive{
 	@Deprecated
 	public void initHeroType(HeroType setHeroType){
 		heroType = setHeroType;
-		changeStat(Constants.mana, getStat(Constants.maxMana) - getStat(Constants.mana));
+		setStat("mana", getStat("max mana"));
 		missile = heroType.ranged;
-		changeStat(Constants.attackRange, heroType.range);
+		changeStat("attack range", heroType.range);
 		initialized = true;
 	}
 	public boolean tick(){
@@ -92,17 +92,13 @@ public class Hero<Element extends Ability> extends Alive{
 	}
 	protected void updateComponentLocation(){
 		super.updateComponentLocation();
-		manaBar.setLocation(healthBar.getLocation());
+		manaBar.setLocation(getLocation().x - (1 - getRatio("mana")) * getWidth() / 2, healthBar.getLocation().y);
 		manaBar.setWidth(getWidth() * getRatio("mana"));
 		healthBar.changeLocation(0, -healthBar.getHeight());
 	}
 	void addAbility(Element element){
 		abilities.add(element);
 		element.owner = this;
-	}
-	public ArrayList<Element> getAbilities(){
-		ArrayList<Element> abilities = this.abilities;
-		return abilities;
 	}
 	public void copyTo(Hero<Element> hero){
 		hero.equippedSpell = equippedSpell;
@@ -122,23 +118,21 @@ public class Hero<Element extends Ability> extends Alive{
 	}
 	private void initStats(){
 		changeBaseSpeed(300);
-		changeStat(Constants.visibilityRange, 900);
-		changeStat(Constants.maxHealth, Constants.baseHealth);
-		changeStat(Constants.health, getStat(Constants.maxHealth));
-		changeStat(Constants.maxMana, 300);
-		changeStat(Constants.mana, getStat(Constants.maxMana));
-		changeStat(Constants.manaRegen, 1);
-		changeStat(Constants.healthRegen, 0.1);
-		changeStat(Constants.experienceGiven, 200);
-		changeStat(Constants.startingDamage, 30);
-		changeStat(Constants.abilityPoints, 1);
-		changeStat(Constants.attackSpeed, 400);
-		changeStat(Constants.baseAnimationTime,1);
-		changeStat(Constants.baseAttackTime,1);
+		changeStat("visibility range", 900);
+		changeStat("max health", Constants.baseHealth);
+		setStat("health", getStat("max health"));
+		changeStat("max mana", 300);
+		setStat("mana", getStat("max mana"));
+		changeStat("mana regen", 1);
+		changeStat("health regen", 0.1);
+		changeStat("experience given", 200);
+		changeStat("starting damage", 30);
+		changeStat("ability points", 1);
+		changeStat("attack speed", 400);
+		setStat("base animation time",1);
+		setStat("base attack time",1);
 	}
-	private void debug(){
-		System.out.println("Hero: " + "Attack state: " + getAttackState());
-		System.out.println("Hero: " + "immobile: " + immobile);
-		System.out.println("Hero: " + "needToMove: " + needToMove);
+	public Ability getAbility(int index){
+		return abilities.get(index);
 	}
 }

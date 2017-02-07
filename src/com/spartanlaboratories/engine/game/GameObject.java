@@ -1,6 +1,7 @@
 package com.spartanlaboratories.engine.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.structure.StructureObject;
@@ -19,6 +20,7 @@ public abstract class GameObject extends StructureObject{
 	public static ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
 	public boolean ticked;
 	private Location location;
+	protected HashMap<String, String> values = new HashMap<String, String>();
 	/**
 	 * A list of other game objects that this game object owns.
 	 */
@@ -112,4 +114,9 @@ public abstract class GameObject extends StructureObject{
 	 * 
 	 */
 	public abstract void update();
+	protected abstract void addToMap();
+	public final HashMap<String, String> getMap(){
+		addToMap();
+		return values;
+	}
 }

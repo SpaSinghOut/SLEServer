@@ -3,9 +3,9 @@ package com.spartanlaboratories.engine.game;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 /**
  * The Creep object is a special type of alive that is meant to behave like a mindless monster or "creep"
@@ -47,12 +47,17 @@ public class Creep extends Alive{
 	 * @since A1
 	 */
 	public enum MovementRule{
-		/**Creep will not reconfigure its movement target unless explicitly told to do so externally.*/NONE, 
+		/**Creep will not reconfigure its movement target unless explicitly told to do so externally.*/
+		NONE, 
 		/**Creep will store its current location as a location to return to. It might leave it if it aggros on something of if it has another movement
-		 * target but will always return to the sentry(guard) point. */SENTRY,
-		/**Creep will do its best to move randomly*/RANDOM, 
-		/**Creep will follow a set of constant move points. Its behaviour after completing the set is configured by {@link Creep.CMPRule}.*/CMP, 
-		/**Makes the creep follow a CMP rule set and sets {@link Creep.CMPRule} to CYCLE*/PATROL,;
+		 * target but will always return to the sentry(guard) point. */
+		SENTRY,
+		/**Creep will do its best to move randomly*/
+		RANDOM, 
+		/**Creep will follow a set of constant move points. Its behaviour after completing the set is configured by {@link Creep.CMPRule}.*/
+		CMP, 
+		/**Makes the creep follow a CMP rule set and sets {@link Creep.CMPRule} to {@link CMPRule#CYCLE}*/
+		PATROL,;
 		/**
 		 * Configures the passed in Creep to have this movement rule.
 		 * @param c The Creep that will have its movement rule changed to this one.
@@ -85,41 +90,42 @@ public class Creep extends Alive{
 		}
 	}
 	protected enum AggressionRule{
-		GANDHI, RETALIATION, MASSMURDER, PSYCOPATH,;
+		COWARD, GANDHI, RETALIATION, MASSMURDER;
 	}
 	public Creep(Engine engine, Faction setFaction) {
 		super(engine, setFaction);
 		setWidth(Creep.creepSize);
 		setHeight(Creep.creepSize);
-		changeStat(Constants.maxHealth, 300);
-		changeStat(Constants.health, 300);
+		changeStat("max health", 300);
+		changeStat("health", 300);
 		changeBaseSpeed(250);
 		needToMove = false;
 		childSetsOwnMovement = false;
-		changeStat(Constants.visibilityRange, 450);
-		changeStat(Constants.attackRange, 12);
-		changeStat(Constants.startingDamage, 30);
-		changeStat(Constants.experienceGiven, 62);
-		changeStat(Constants.healthRegen, 0.3);
-		changeStat(Constants.goldGiven, ((int)(Math.random() * 8)) + 36); 
+		changeStat("visibility range", 450);
+		changeStat("attack range", 12);
+		changeStat("starting damage", 30);
+		changeStat("experience given", 62);
+		changeStat("health regen", 0.3);
+		changeStat("gold given", ((int)(Math.random() * 8)) + 36); 
 		setColor("white");
 		allCreeps.add(this);
 		initializeWithDefaultRules();
 		try {
 			setTexture();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	public boolean tick(){
+		creepAI();
+		return super.tick();
+	}
+	private void configureMovement(){
 		switch(creepMovementRule){
 		case CMP:case PATROL:
-			//creepAI();
-			if(reachedPoint()){
+			if(reachedPoint())
 				checkPoint();
-				setTarget(getNextMovePoint());
-			}
+			setTarget(getNextMovePoint());
 			break;
 		case NONE:
 			break;
@@ -131,32 +137,38 @@ public class Creep extends Alive{
 			if(target == null)target = sentry;
 			break;
 		}
-		return super.tick();
+	}
+	private void configureAggro(){
+		switch(aggressionRule){
+		case COWARD: case GANDHI: case RETALIATION:
+			break;
+		case MASSMURDER:
+			aggroOn(checkForPotentialAttackTarget());
+			break;
+		}
 	}
 	private Alive checkForPotentialAttackTarget(){
 		Alive potentialAttackTarget = null;
 		for(Alive a: Alive.allAlives){
 			if(a.faction != this.faction 
-			&& engine.util.getRealCentralDistance(this, a) < getStat(Constants.visibilityRange)){
+			&& engine.util.getRealCentralDistance(this, a) < getStat("visibility range")){
 				if(potentialAttackTarget == null)potentialAttackTarget = a;
-				else{
-					if(engine.util.getRealCentralDistance(potentialAttackTarget, this)>
-					engine.util.getRealCentralDistance(a, this))potentialAttackTarget = a;
-				}
+				else if(engine.util.getRealCentralDistance(potentialAttackTarget, this)>
+						engine.util.getRealCentralDistance(a, this))
+							potentialAttackTarget = a;
 			}
 		}
 		return potentialAttackTarget;
 	}
 	private Location getNextMovePoint(){
-		for(int i = 0; i < engine.map.numberOfMovePoints; i++){
-			if(!checkPoints[i]){
+		for(int i = 0; i < engine.map.numberOfMovePoints; i++)
+			if(!checkPoints[i])
 				return movePoints[i];
-			}
-		}
-		for(boolean b: checkPoints)b = false;
+		for(int i = 0; i < checkPoints.length;i++)
+			checkPoints[i] = false;
 		switch(cmprule){
 		case CYCLE:
-			return movePoints[0];
+			return getNextMovePoint();
 		case DIEBOUND:
 			sentry.duplicate(target);
 		case DIEFREE:
@@ -164,45 +176,47 @@ public class Creep extends Alive{
 		default: return null;
 		}
 	}
+	/**
+	 * Marks the next not reached move point as reached
+	 */
 	private void checkPoint(){
-		for(int i = 0; i < engine.map.numberOfMovePoints; i++){
+		for(int i = 0; i < engine.map.numberOfMovePoints; i++)
 			if(!checkPoints[i]){
 				checkPoints[i] = true;
 				return;
 			}
-		}
 	}
 	private void creepAI(){
-		if(getAttackTarget() != null && engine.util.everySecond(2)){
-			Alive alive =  checkForPotentialAttackTarget(); 
-			if(alive != null)
-			if(engine.util.getRealCentralDistance(this, alive)
-			<  engine.util.getRealCentralDistance(this, getAttackTarget()))
-				aggroOn(alive);
-		}
-		if(getAttackTarget() == null || !getAttackTarget().alive){
-			Alive pat = checkForPotentialAttackTarget();
-			if(pat != null)aggroOn(pat);
-			else target = getNextMovePoint();
-		}
-		if(engine.util.everySecond(2) && getAttackTarget() != null 
-		&& !this.isVisible(getAttackTarget()) && isInForgetfulState()){
-			aggroOn(null);
-			setTarget(getNextMovePoint());
-		}
-		if(target == null)setTarget(getNextMovePoint());
+		Alive pat = checkForPotentialAttackTarget();
+		if(engine.util.everySecond(2))
+			reAggro();
+		if(getAttackState() == Alive.AttackState.NONE)
+			configureMovement();
+	}
+	public void reAggro(){
+		Alive pat = checkForPotentialAttackTarget();
+		if(getAttackTarget() != null && getAttackTarget().alive && !lostTarget() && !isCloserThanAttackTarget(pat))
+			return;
+		aggroOn(pat);
+	}
+	private boolean lostTarget(){
+		return !canSee(getAttackTarget()) && isInForgetfulState();
+	}
+	private boolean isCloserThanAttackTarget(Alive alive){
+		return engine.util.getRealCentralDistance(this, alive) < engine.util.getRealCentralDistance(this, getAttackTarget());
 	}
 	private boolean reachedPoint(){
-		Location movePoint = getNextMovePoint();
-		if(movePoint == null)return true;
-		if(getLocation().x < movePoint.x + getWidth()
-		&& getLocation().x > movePoint.x - getWidth()
-		&& getLocation().y < movePoint.y + getHeight()
-		&& getLocation().y > movePoint.y - getHeight())
-			return true;
-		return false;
+		Location movePoint = getNextMovePoint(); 				// Gets what the next move point is.
+		return movePoint == null ? true :						// If the move point is null returns true (reached point)
+		getLocation().x < movePoint.x + getWidth() / 2			// If the move point is not null
+		&& getLocation().x > movePoint.x - getWidth() / 2		// Then performs calculations to see if it was reached
+		&& getLocation().y < movePoint.y + getHeight() / 2		// And if reached returns true (reached point)
+		&& getLocation().y > movePoint.y - getHeight() / 2;		// Or if not reached the false (did not reach point)
 	}
-	/**Returns a new Creep that is a copy of this Creep
+	/**
+	 * Returns a new Creep that is a copy of this Creep
+	 * 
+	 * @category ObjectMethodOverrides
 	 * @return c a new Creep that is a copy of this Creep
 	 * @see #copyTo(Creep)
 	 */
@@ -219,7 +233,7 @@ public class Creep extends Alive{
 		creepMovementRule.set(c);
 		c.aggressionRule = aggressionRule;
 		cmprule.set(c);
-		c.sentry = sentry==null?null:new Location(sentry);
+		c.sentry.duplicate(sentry);
 		c.followsRuleSet(followsRuleSet);//will set both followsRuleSet and movePoints
 	}
 	public void initializeWithDefaultRules(){
@@ -240,5 +254,15 @@ public class Creep extends Alive{
 	public void followsRuleSet(int ruleSet){
 		followsRuleSet = ruleSet;
 		movePoints = engine.map.movePoints[faction.ordinal()][followsRuleSet];
+		checkPoints = new boolean[getRealArraySize(movePoints)];
+	}
+	public void setCMPRule(CMPRule cmpRule){
+		cmpRule.set(this);
+	}
+	private int getRealArraySize(Object[] array){
+		int count = 0;
+		for(Object o:array)
+			count+=o!=null?1:0;
+		return count;
 	}
 }

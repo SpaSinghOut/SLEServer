@@ -6,7 +6,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-import com.spartanlaboratories.engine.structure.Constants;
+import com.spartanlaboratories.util.Constants;
 
 public abstract class Item implements Castable{
 	double[] stats;
@@ -17,7 +17,7 @@ public abstract class Item implements Castable{
 		stats = setStats;
 	}
 	public Item(){
-		stats = new double[Constants.statsSize];
+		stats = new double[Constants.getStatsSize()];
 		defineStats();
 		try {
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/"+itemName+".png"));

@@ -22,7 +22,7 @@ public abstract class Controller extends StructureObject{
 	public Alive.Faction faction;
 	/**
 	 * <h1>The Controller Constructor</h1>
-	 * Creates a new controller owned by the passed in engine and belonging to the passed in faction. Sets the selected unit to be the controller's hero.
+	 * Creates a new controller owned by the passed in engine and belonging to the passed in faction.
 	 * @param engine the game engine
 	 * @param setFaction the faction which this controller will belong to
 	 */

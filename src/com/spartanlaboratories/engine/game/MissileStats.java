@@ -18,7 +18,7 @@ class MissileStats{
 	double speed;
 	String color;
 	String name;
-	private static final String exceptionMessage = "Error encountered while reading file: Missile.xml \r\n";
+	private static final String exceptionMessage = "Error encountered while reading file: Missile.xml \r\n"; 
 	MissileStats(String name){
 		this.name = name;
 		try{
@@ -51,7 +51,7 @@ class MissileStats{
 		while(reader.hasNext()){
 			reader.next();
 			if(reader.isStartElement()){
-				System.out.println("reading the local name as " + reader.getLocalName().toLowerCase());
+				//System.out.println("reading the local name as " + reader.getLocalName().toLowerCase());
 				switch(reader.getLocalName()){
 				case "bHoming":
 					reader.next();
@@ -124,8 +124,8 @@ class MissileStats{
 					default: System.out.println("undefined field name: " + reader.getLocalName());
 				}
 			}
-			else if(reader.isEndElement() && reader.getLocalName().equals("Ability")){
-				System.out.println("Found end element: " + reader.getLocalName());
+			else if(reader.isEndElement() && reader.getLocalName().equals("Missile")){
+				//System.out.println("Found end element: " + reader.getLocalName());
 				break;
 			}
 		}

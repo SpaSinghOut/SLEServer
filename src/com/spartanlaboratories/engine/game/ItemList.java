@@ -1,7 +1,7 @@
 package com.spartanlaboratories.engine.game;
 
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.HumanClient;
+import com.spartanlaboratories.util.Constants;
 
 
 public class ItemList{
@@ -38,7 +38,7 @@ public class ItemList{
 			}
 			break;
 		case INVENTORY:
-			for(int i = 0; i < Constants.statsSize; i++)owner.changeStat(i, item.stats[i]);
+			for(int i = 0; i < Constants.getStatsSize(); i++)owner.changeStat(i, item.stats[i]);
 			break;
 		}
 		((HumanClient)((Hero)owner).owner).out("added item into slot: " + slot);
@@ -56,7 +56,7 @@ public class ItemList{
 			}
 			break;
 		case INVENTORY:
-			for(int i = 0; i < Constants.statsSize; i++)owner.changeStat(i, -1 * items[slot].stats[i]);
+			for(int i = 0; i < Constants.getStatsSize(); i++)owner.changeStat(i, -1 * items[slot].stats[i]);
 			break;
 		}
 		items[slot] = null;

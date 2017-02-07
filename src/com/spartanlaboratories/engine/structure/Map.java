@@ -10,6 +10,7 @@ import com.spartanlaboratories.engine.game.Rune;
 import com.spartanlaboratories.engine.game.TerrainObject;
 import com.spartanlaboratories.engine.game.Tower;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 public abstract class Map extends StructureObject{
 	/**
@@ -26,8 +27,8 @@ public abstract class Map extends StructureObject{
 	 */
 	public final int maxMovePoints = 30;
 	public Location[][][] movePoints = new Location[Alive.Faction.values().length][maxRules][maxMovePoints];
-	public TerrainObject[] terrain = new TerrainObject[(int) (engine.getWrap().x / 15)];
-	protected Actor[] borders = new Actor[4];
+	public TerrainObject[] terrain;
+	private Actor[] borders = new Actor[4];
 	protected ArrayList<Tower> towers = new ArrayList<Tower>();
 	public Rune rune;
 	public ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
@@ -65,10 +66,26 @@ public abstract class Map extends StructureObject{
 	/**
 	 * When invoked goes through the list of all Spawn Points contained by this map and makes each one spawn one unit that it was set to spawn.
 	 */
-	final public void spawn(){
+	public final void spawn(){
 		for(SpawnPoint csp: spawnPoints)csp.spawn();
 	}
-	protected void generateBorders(){}
+	protected final void generateBorders(Location size){
+		TerrainObject[] o = new TerrainObject[4];
+		for(int i = 0; i < 4; i++){
+			o[i] = new TerrainObject(engine);
+			o[i].setColor("green");
+		}
+		
+		o[0].setLocation(0 - size.x / 2, 0);
+		o[1].setLocation(0, 0 - size.y / 2);
+		o[2].setLocation(size.x / 2,0);
+		o[3].setLocation(0,size.y / 2);
+		
+		o[0].setSize(5,size.y);
+		o[2].setSize(5,size.y);
+		o[1].setSize(size.x,5);
+		o[3].setSize(size.x,5);
+	}
 	protected  void initializeSpawnPoints(){}
 	public void forConnected(Controller controller){
 		playersOnLevel.add(controller);
@@ -136,5 +153,8 @@ public abstract class Map extends StructureObject{
 			terrain[i * 4 + 3] = new TerrainObject(engine);
 			terrain[i * 4 + 3].setLocation(new Location((obstacleWidth * (i  * 2+ 1.5)), 1500 + obstacleWidth));
 		}
+	}
+	protected void pauseUntilScreenReady(Human human){
+		while(human.getScreenSize().equals(new Location()));
 	}
 }

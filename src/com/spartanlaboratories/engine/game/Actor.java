@@ -9,7 +9,6 @@ import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
 
 public class Actor extends VisibleObject implements AcceptsInput{
-	public static String className;
 	protected Location target;
 	private double baseSpeed;
 	private double speedModifier;
@@ -265,5 +264,10 @@ public class Actor extends VisibleObject implements AcceptsInput{
 	private void home(){
 		setMovement(target);
 		moveToALocation();
+	}
+	@Override
+	protected void addToMap(){
+		super.addToMap();
+		values.put("speed", String.valueOf(getSpeed()));
 	}
 }

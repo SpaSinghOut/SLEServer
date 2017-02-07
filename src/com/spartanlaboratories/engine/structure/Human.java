@@ -18,15 +18,17 @@ public abstract class Human extends Controller{
 	public Human(Engine engine, Faction setFaction) {
 		super(engine, setFaction);
 		players.add(this);
-		this.engine.map.forConnected(this);
+		engine.map.forConnected(this);
 	}
 	@Override 
 	public void tick(){
 		processQuadInfo();
+		sendUnitInfo();
 		sendMouseLocation();
 	}
 	public abstract void poll();
-	public abstract void processQuadInfo();
+	protected abstract void processQuadInfo();
+	protected abstract void sendUnitInfo();
 	public abstract void out(String message);
 	public abstract void notifyClient(String message);
 	public Location getMouseLocation(){
@@ -58,8 +60,13 @@ public abstract class Human extends Controller{
 			System.out.println("the server caught improper input");
 		}
 	}
+	/**
+	 * Decides what to do with keyboard input
+	 * @param key
+	 * @param pressType
+	 */
 	public void receiveKeyInput(int key, String pressType){
-		if(key == KeyEvent.VK_Q)((Ability)((Hero)controlledUnits.get(0)).abilities.get(0)).cast();
+		if(key == KeyEvent.VK_Q)((Ability)((Hero)controlledUnits.get(0)).getAbility(0)).cast();
 	}
 	public Camera coveringCamera(Location locationOnScreen) throws SLEImproperInputException{
 		for(Camera c:cameras)

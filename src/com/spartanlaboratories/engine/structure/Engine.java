@@ -23,9 +23,18 @@ import com.spartanlaboratories.engine.game.VisibleObject;
 import com.spartanlaboratories.engine.util.Location;
 
 /**
- * The Spartan Laboratories Game Engine
- * @author Spartak
+ * The Spartan Laboratories Game Engine<br><br>
  *
+ * To begin a new project that uses this engine follow these steps
+ * <ol><ol>
+ * <li> Create a class that extends the {@link Map} class
+ * <li> In your main method create a new instance of Engine
+ * <li> Call your choice of either the {@link #goMulti(Map, int)} or the {@link #goSingle(Map)}
+ * method (so far only the {@link #goMulti(Map, int)} method is confirmed to work) and pass in
+ * a new instance of the class that extends {@link Map}
+ * <li> Initialize the tracker using either {@link Tracker#initialize()} or {@link Tracker#initialize(com.spartanlaboratories.engine.structure.Tracker.TrackerPreset)
+ * <li> Call {@link #run()}
+ * </ol></ol>
  */
 public class Engine{
 	/**
@@ -71,15 +80,22 @@ public class Engine{
 			typeHandler.newEntry("map", map);
 			this.map = (Map) typeHandler.typeGetter.get("map");
 			for(int i = 0; i < numPlayers; i++){
+				
+				System.out.printf("Waiting for %d connections\n", numPlayers - i);
 				// Waits for and registers a connected client
 			    Socket client = server.accept();
+			    
+			    System.out.println("Connection detected");
+			    
 				// Writes to the aforementioned client
 			    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
 				// Reads from the aforementioned client
 			    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 				HumanClient human = new HumanClient(this);
+				
 				new ClientListener(client, out, in, human);
-				//initializeOpenGL();
+				
+				System.out.println("Connection setup complete");
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -133,8 +149,6 @@ public class Engine{
 		}
 	}
 	public void goMultiTest(Map map){
-		
-		// Other shit
 		typeHandler.newEntry("map", map);
 		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
@@ -142,13 +156,12 @@ public class Engine{
 		Thread server = new Thread(new Server(this));
 		server.setPriority(Thread.MIN_PRIORITY);
 		server.start();
-		// End other shit
 	}
 	public void goSingle(Map map){
-		new HumanSingle(this);
 		typeHandler.newEntry("map", map);
 		this.map = (Map) typeHandler.typeGetter.get("map");
 		init();
+		new HumanSingle(this);
 	}
 	public class TypeHandler<Type extends StructureObject>{
 		private HashMap<String, StructureObject> typeGetter = new HashMap<String,StructureObject>();

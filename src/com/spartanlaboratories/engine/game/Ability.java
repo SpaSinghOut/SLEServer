@@ -7,11 +7,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.structure.HumanClient;
 import com.spartanlaboratories.engine.structure.SLEImproperInputException;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 /**
  * The Ability class is this engine's prototype and utility class for creating Hero abilities or spells. This class gets its basic information from 
@@ -61,7 +61,7 @@ public abstract class Ability implements Castable{
 			while(reader.hasNext()){
 				reader.next();
 				if(reader.isStartElement()){
-					System.out.println("reading the local name as " + reader.getLocalName().toLowerCase());
+					//System.out.println("reading the local name as " + reader.getLocalName().toLowerCase());
 					switch(reader.getLocalName()){
 					case "iDuration":
 						reader.next();
@@ -91,7 +91,7 @@ public abstract class Ability implements Castable{
 						else if(reader.getText().toLowerCase().equals("passive"))castType = CastType.PASSIVE;
 						else if(reader.getText().toLowerCase().equals("toggle"))castType = CastType.TOGGLE;
 						else System.out.println("Cast type not found.");
-						System.out.println("read the ability cast type as: " + reader.getText().toLowerCase() + " and set  cast type to " + castType);
+						//System.out.println("read the ability cast type as: " + reader.getText().toLowerCase() + " and set  cast type to " + castType);
 						break;
 					case "tColor":
 						reader.next();
@@ -101,7 +101,7 @@ public abstract class Ability implements Castable{
 					}
 				}
 				else if(reader.isEndElement() && reader.getLocalName().equals("Ability")){
-					System.out.println("Found end element: " + reader.getLocalName());
+					//System.out.println("Found end element: " + reader.getLocalName());
 					break;
 				}
 			}
@@ -193,7 +193,7 @@ public abstract class Ability implements Castable{
 		if(abilityStats.castType.isTimeBased() && level > 0){
 			if(--durationLeft == 0)terminate();
 			if(--CDRemaining <= 0)state = State.READY;
-			if(owner.getStat(Constants.mana) > abilityStats.manaCost && CDRemaining <= 0 && level > 0)this.state = State.READY;
+			if(owner.getStat("mana") > abilityStats.manaCost && CDRemaining <= 0 && level > 0)this.state = State.READY;
 			else state = State.DOWN;
 			if(state == State.CHANNELING)channel();
 		}
@@ -249,23 +249,24 @@ public abstract class Ability implements Castable{
 				castControl = owner.owner.engine.getTickRate() / 2;
 			}
 			break;
+		default: assert false : abilityStats.castType;
 		}
 	}
 	private void activate(Location setLocation){
-		owner.changeStat(Constants.mana, -(abilityStats.manaCost));
+		assert owner.getStat("mana") > abilityStats.manaCost;
+		owner.changeStat("mana", -abilityStats.manaCost);
 		if(abilityStats.castType == Castable.CastType.ALIVETARGET)target = (Alive) owner.owner.selectedUnit;
 		cast();
 	}
 	private void activate(boolean b){
-		owner.changeStat(Constants.mana, -(abilityStats.manaCost));
+		assert owner.getStat("mana") > abilityStats.manaCost;
+		owner.changeStat("mana", -abilityStats.manaCost);
 		cast();
 	}
 	public abstract void cast();
 	private void channel(){
-		if(!owner.getPermissions(Constants.channelingAllowed)){
+		if(!owner.getPermissions(Constants.channelingAllowed))
 			endChannel();
-			return;
-		}
 	}
 	void endChannel(){
 		
@@ -280,7 +281,7 @@ public abstract class Ability implements Castable{
 		target = setTarget;
 	}
 	public void levelAbility(){
-		owner.changeStat(Constants.abilityPoints, -1);
+		owner.changeStat("ability points", -1);
 		if(abilityStats.castType == Castable.CastType.TOGGLE)
 			state = State.READY;
 		level++;

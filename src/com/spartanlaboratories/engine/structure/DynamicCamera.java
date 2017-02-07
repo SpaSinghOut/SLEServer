@@ -183,9 +183,6 @@ public class DynamicCamera extends StructureObject implements Camera{
 		public void setLocation(com.spartanlaboratories.measurements.Location location){
 			world.setCenter(location);
 		}
-		private void setStats(Location center, Location size){
-			set(new Rectangle(center, size.x, size.y));
-		}
 		/**
 		 * @return
 		 * @see com.spartanlaboratories.measurements.Rectangle#copy()
@@ -194,7 +191,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 			return world.copy();
 		}
 		/**
-		 * 
+		 * @return
 		 * @see com.spartanlaboratories.measurements.Rectangle#clear()
 		 */
 		public void clear() {
@@ -221,13 +218,6 @@ public class DynamicCamera extends StructureObject implements Camera{
 		 */
 		public com.spartanlaboratories.measurements.Location getSize() {
 			return world.getSize();
-		}
-		/**
-		 * @param location
-		 * @see com.spartanlaboratories.measurements.Rectangle#setSize(com.spartanlaboratories.measurements.Location)
-		 */
-		private void setSize(com.spartanlaboratories.measurements.Location location) {
-			world.setSize(location);
 		}
 		/**
 		 * @return
@@ -272,12 +262,6 @@ public class DynamicCamera extends StructureObject implements Camera{
 		public boolean equals(Rectangle element) {
 			return world.equals(element);
 		}
-		private void magnify(com.spartanlaboratories.measurements.Location location){
-			com.spartanlaboratories.measurements.Location worldSize = world.getSize();
-			worldSize.magnify(location);
-			setSize(worldSize);
-			//setWorldSize(new Location(world.getSize().x * location.x, world.getSize().y * location.y));
-		}
 		/**
 		 * "Moves" the camera by the coordinates in the given location. Similar to {@link #setWorldLocation(Location)} except instead of setting
 		 * the absolute location of the camera this method changes the current location by the amount given in the parameter.
@@ -296,7 +280,34 @@ public class DynamicCamera extends StructureObject implements Camera{
 		}
 		// DYNAMIC CAMERA SPECIFIC METHODS
 		public boolean isWorldBound(com.spartanlaboratories.measurements.Location northWest){
-			return withinWorldXBounds(new Location(northWest)) && withinWorldYBounds(new Location(northWest));
+			return isXBound(new Location(northWest)) && isYBound(new Location(northWest));
+		}
+		private void setStats(Location center, Location size){
+			set(new Rectangle(center, size.x, size.y));
+		}
+		/**
+		 * @param location
+		 * @see com.spartanlaboratories.measurements.Rectangle#setSize(com.spartanlaboratories.measurements.Location)
+		 */
+		private void setSize(com.spartanlaboratories.measurements.Location location) {
+			world.setSize(location);
+		}
+		private void magnify(Location location){
+			com.spartanlaboratories.measurements.Location worldSize = world.getSize();
+			worldSize.magnify(location);
+			setSize(worldSize);
+		}
+		private boolean isXBound(Location location){
+			return isXBound(location.x);
+		}
+		private boolean isYBound(Location location){
+			return isYBound(location.y);
+		}
+		private boolean isXBound(double x){
+			return x <= getXMax() && x >= getXMin();
+		}
+		private boolean isYBound(double y){
+			return y >= getYMin() && y <= getYMax();
 		}
 		
 	}
@@ -379,23 +390,11 @@ public class DynamicCamera extends StructureObject implements Camera{
 	public boolean isMonitorBound(Location location){
 		return withinMonitorXBounds(location) && withinMonitorYBounds(location);
 	}
-	private boolean withinWorldXBounds(Location location){
-		return withinWorldXBounds(location.x);
-	}
-	private boolean withinWorldYBounds(Location location){
-		return withinWorldYBounds(location.y);
-	}
 	private boolean withinMonitorXBounds(Location location){
 		return withinMonitorXBounds(location.x);
 	}
 	private boolean withinMonitorYBounds(Location location){
 		return withinMonitorYBounds(location.y);
-	}
-	private boolean withinWorldXBounds(double x){
-		return x <= world.getXMax() && x >= world.getXMin();
-	}
-	private boolean withinWorldYBounds(double y){
-		return y >= world.getYMin() && y <= world.getYMax();
 	}
 	private boolean withinMonitorXBounds(double x){
 		return x <= monitor.getXMax() && x >= monitor.getXMin();
@@ -460,25 +459,25 @@ public class DynamicCamera extends StructureObject implements Camera{
 	}
 	public boolean canSeeObjectPartially(VisibleObject visibleObject){
 		Rectangle area = visibleObject.getAreaCovered();
-		return world.isWorldBound(area.northWest)
-			|| world.isWorldBound(area.northEast)
-			|| world.isWorldBound(area.southWest)
-			|| world.isWorldBound(area.southEast);
+		return !(world.getXMin() > area.getXMax()
+			&& 	 world.getXMax() < area.getXMin()
+			&& 	 world.getYMin() > area.getYMax()
+			&& 	 world.getYMax() < area.getYMin());
 	}
 	public boolean canSeeObjectCenter(VisibleObject visibleObject){
 		return world.isWorldBound(visibleObject.getLocation());
 	}
 	public boolean canSeeObjectWholly(VisibleObject visibleObject){
 		Rectangle area = visibleObject.getAreaCovered();
-		return withinWorldXBounds(area.getXMin())
-			&& withinWorldXBounds(area.getXMax())
-			&& withinWorldYBounds(area.getYMin())
-			&& withinWorldYBounds(area.getYMax());
+		return world.isXBound(area.getXMin())
+			&& world.isXBound(area.getXMax())
+			&& world.isYBound(area.getYMin())
+			&& world.isYBound(area.getYMax());
 	}
 	
 	// Method overrides and other generic API
 	/**
-	 * @category Object class overrides
+	 * @category ObjectMethodOverrides
 	 */
 	public String toString(){
 		return "In world: " + world.getCenter() + world.getSize() + " On monitor: " + monitor.getCenter() + monitor.getSize();
@@ -502,6 +501,14 @@ public class DynamicCamera extends StructureObject implements Camera{
 	public void print(){
 		System.out.println(toString());
 	}
+	/**
+	 * Returns whether or not this camera has the same values as another camera. Checks only the world and monitor values.
+	 * 
+	 * @category ObjectMethodOverrides
+	 * @param camera the camera to which this camera is being compared to
+	 * @return {@code true} if the world and monitor values are the same as those of the passed in camera
+	 * <br> {@code false} if the world and monitor values are not the same as those of the passed in camera
+	 */
 	public boolean equals(DynamicCamera camera){
 		return world.equals(camera.world.get()) && monitor.equals(camera.getMonitorArea());
 	}
@@ -536,8 +543,8 @@ public class DynamicCamera extends StructureObject implements Camera{
 				quadCorners[0].setX(monitor.getXMin());
 				quadCorners[3].setX(monitor.getXMin());
 				double missingPortion = (world.getXMin() - r.getXMin()) / r.getSize().x;
-				textureValues[0].setX((texture != null ? missingPortion : missingPortion));
-				textureValues[3].setX((texture != null ? missingPortion : missingPortion));
+				textureValues[0].setX(missingPortion);
+				textureValues[3].setX(missingPortion);
 			}
 			if(r.getYMax() > world.getYMax()){
 				quadCorners[0].setY(monitor.getYMax());
@@ -586,7 +593,6 @@ public class DynamicCamera extends StructureObject implements Camera{
 			pan.resetSpeed();
 			return;
 		}
-		System.out.println(pan.speed);
 		if(monitorLocation.x < pan.panningRange)world.move(-pan.getSpeed(), 0d);
 		else if(monitorLocation.x > monitor.getXMax() - pan.panningRange)world.move(pan.getSpeed(),0d);
 		if(monitorLocation.y < pan.panningRange)world.move(0d,pan.getSpeed());
@@ -606,13 +612,14 @@ public class DynamicCamera extends StructureObject implements Camera{
 	@Override
 	public ArrayList<VisibleObject> getQualifiedObjects() {
 		ArrayList<VisibleObject> potential = 
-						acceleratedVOSearch ? 
-						engine.qt.retrieveBox(world.getXMin() - 100, world.getYMin() - 100, world.getXMax() + 100, world.getYMax() + 100):
+						//acceleratedVOSearch ? 
+						//engine.qt.retrieveBox(world.getXMin() - 100, world.getYMin() - 100, world.getXMax() + 100, world.getYMax() + 100):
 						engine.visibleObjects,
 								 real = new ArrayList<VisibleObject>();
 		for(VisibleObject vo:potential)
 			if(canSeeObjectPartially(vo))
 				real.add(vo);
+		//System.out.println("visible objects: " + real.size());
 		return real;
 	}
 	@Override

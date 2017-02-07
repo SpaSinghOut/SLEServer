@@ -2,9 +2,9 @@ package com.spartanlaboratories.engine.game;
 
 import java.io.IOException;
 
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.structure.Engine;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 public class Tower extends Alive {
 	private static final int towerHP = 1600;
@@ -14,25 +14,16 @@ public class Tower extends Alive {
 		setWidth(towerSize);
 		setHeight(towerSize);
 		changePermissions(Constants.movementAllowed, false);
-		if(setFaction == Alive.Faction.RADIANT){
-			setLocation(100,1000);
-			setColor("white");
-			changeStat(Constants.maxHealth, towerHP);
-			changeStat(Constants.health, towerHP);
-		}
-		else if(setFaction == Alive.Faction.DIRE){
-			setLocation(new Location(engine.getWrap().x - 100, 1000));
-			setColor("white");
-			changeStat(Constants.maxHealth, towerHP);
-			changeStat(Constants.health, towerHP);
-		}
-		changeStat(Constants.visibilityRange, 700);
-		changeStat(Constants.attackRange, 700);
+		setColor("white");
+		setStat("max health", towerHP);
+		setStat("health", getStat("max health"));
+		changeStat("visibility range", 700);
+		changeStat("attack range", 700);
 		immobile = true;
-		changeStat(Constants.startingDamage, 70);
-		changeStat(Constants.baseAnimationTime, 1);
-		changeStat(Constants.baseAttackTime, 1);
-		changeStat(Constants.attackSpeed, 100);
+		changeStat("starting damage", 70);
+		setStat("base animation time", 1);
+		setStat("base attack time", 1);
+		changeStat("attack speed", 100);
 		missile = true;
 		attackMissileType = new MissileStats("auto");
 		changePermissions(Constants.autoAttackAllowed, true);
@@ -48,7 +39,7 @@ public class Tower extends Alive {
 		if(!super.tick())return false;
 		if(attackTarget != null)
 			if(!attackTarget.active || 
-			engine.util.getRealCentralDistance(this, attackTarget) > getStat(Constants.visibilityRange))
+			engine.util.getRealCentralDistance(this, attackTarget) > getStat("visibility range"))
 				attackTarget = null;
 		if(attackTarget == null || !attackTarget.active || !attackTarget.alive)findAttackTarget();
 		return active;
@@ -56,7 +47,7 @@ public class Tower extends Alive {
 	private void findAttackTarget(){
 		Alive potentialAttackTarget = null;
 		for(Alive a: Alive.allAlives){
-			if(a.faction != this.faction && getStat(Constants.visibilityRange) > engine.util.getRealCentralDistance(a, this)){
+			if(a.faction != this.faction && getStat("visibility range") > engine.util.getRealCentralDistance(a, this)){
 				if(potentialAttackTarget == null)potentialAttackTarget = a;
 				else{
 					if(engine.util.getRealCentralDistance(potentialAttackTarget, this)>

@@ -1,7 +1,7 @@
 package com.spartanlaboratories.engine.game;
 
-import com.spartanlaboratories.engine.structure.Constants;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.util.Constants;
 
 public class Missile extends Actor{
 	double damage;
@@ -16,7 +16,7 @@ public class Missile extends Actor{
 	 * @param passX	- The x coordinate of this missile's target location
 	 * @param passY - The y coordinate of this missile's target location
 	 */
-	public Missile(MissileStats setSpellName,  Alive setParent, double passX, double passY){
+	public Missile(String setSpellName,  Alive setParent, double passX, double passY){
 		super(setParent.engine);
 		genericMissileInit(setSpellName, setParent);
 		setLocation(new Location(setParent.getLocation().x, setParent.getLocation().y));
@@ -24,7 +24,7 @@ public class Missile extends Actor{
 		penetrating = missileType.penetrating;
 	}
 	//the default constructor that will create a non-homing missile at the target location with the given target
-	public Missile(MissileStats setSpellName,  Alive setParent, Location startingLocation, Location setTarget){
+	public Missile(String setSpellName,  Alive setParent, Location startingLocation, Location setTarget){
 		super(setParent.engine);
 		genericMissileInit(setSpellName, setParent);
 		setLocation(startingLocation);
@@ -32,13 +32,13 @@ public class Missile extends Actor{
 		setMovement(target);
 	}
 	/**
-	 * The best constructor to use when creating a homing missile
+	 * The best constructor to use when creating a non-auto-attack homing missile
 	 * 
 	 * @param setMissileType - The type of missile that is going to be created.
 	 * @param setParent - The parent of the missile
 	 * @param setHomingTarget - The homing target of the missile
 	 */
-	public Missile(MissileStats setMissileType,  Alive setParent, Alive setHomingTarget){
+	public Missile(String setMissileType,  Alive setParent, Alive setHomingTarget){
 		super(setParent.engine);
 		genericMissileInit(setMissileType, setParent);
 		setLocation(new Location(setParent.getLocation().x, setParent.getLocation().y));
@@ -53,13 +53,13 @@ public class Missile extends Actor{
 	public Missile(Alive setParent, Alive setHomingTarget){
 		super(setParent.engine);
 		auto = true;
-		genericMissileInit(new MissileStats("auto"), setParent);
+		genericMissileInit("auto", setParent);
 		setLocation(setParent.getLocation());
 		homingTarget = setHomingTarget;
 		goTo(homingTarget.getLocation());
 	}
-	private void genericMissileInit(MissileStats mt, Alive setParent){
-		missileType = mt;
+	private void genericMissileInit(String mt, Alive setParent){
+		missileType = new MissileStats(mt);
 		setWidth(missileType.width);
 		setHeight(missileType.height);
 		parent = setParent;
@@ -69,7 +69,7 @@ public class Missile extends Actor{
 		needToMove = true;
 		childSetsOwnMovement = true;
 		shape = Actor.Shape.QUAD;
-		damage = !auto ? missileType.damage : setParent.getStat(Constants.damage);
+		damage = !auto ? missileType.damage : parent.getStat("damage");
 		movementType = missileType.homing ? Actor.MovementType.HOMING : Actor.MovementType.DIRECTIONBASED;
 	}
 	public boolean tick(){

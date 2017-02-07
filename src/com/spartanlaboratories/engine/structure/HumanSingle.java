@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.spartanlaboratories.engine.game.Alive;
 import com.spartanlaboratories.engine.util.Location;
+import com.spartanlaboratories.graphics.ConnectionHandler;
 
 public class HumanSingle extends Human{
 	ArrayList<Input> input = new ArrayList<Input>();
@@ -48,16 +49,61 @@ public class HumanSingle extends Human{
 		
 	}
 	@Override
-	public void notifyClient(String message) {
+	public void notifyClient(String message) {}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.engine.structure.Human#sendUnitInfo()
+	 */
+	@Override
+	protected void sendUnitInfo() {
 		// TODO Auto-generated method stub
 		
 	}
 
 }
-class SinglePlayerHandler{
+class SinglePlayerHandler implements ConnectionHandler{
 	HumanSingle owner;
 	SinglePlayerHandler(HumanSingle owner){
 		this.owner = owner;
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.graphics.ConnectionHandler#notifyOfKeyPress(com.spartanlaboratories.graphics.Input)
+	 */
+	@Override
+	public void notifyOfKeyPress(com.spartanlaboratories.graphics.Input input) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.graphics.ConnectionHandler#notifyOfMouseClick(com.spartanlaboratories.graphics.Input)
+	 */
+	@Override
+	public void notifyOfMouseClick(com.spartanlaboratories.graphics.Input input) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.graphics.ConnectionHandler#notifyOfMouseLocation(com.spartanlaboratories.graphics.Input)
+	 */
+	@Override
+	public void notifyOfMouseLocation(com.spartanlaboratories.graphics.Input input) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.graphics.ConnectionHandler#notifyOfMouseWheel(com.spartanlaboratories.graphics.Input)
+	 */
+	@Override
+	public void notifyOfMouseWheel(com.spartanlaboratories.graphics.Input input) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.graphics.ConnectionHandler#getStat(java.lang.String)
+	 */
+	@Override
+	public String getStat(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

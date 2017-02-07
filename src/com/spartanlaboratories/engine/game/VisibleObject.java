@@ -173,6 +173,10 @@ public class VisibleObject extends GameObject{
 	public String getColor(){
 		return new String(color != null ? color : "white");
 	}
+	/**
+	 * Sets the color ofthe unit to the passed in color
+	 * @param color
+	 */
 	public void setColor(String color){
 		this.color = color;
 	}
@@ -231,5 +235,13 @@ public class VisibleObject extends GameObject{
 	}
 	public String getTextureNE() {
 		return texture;
+	}
+	/* (non-Javadoc)
+	 * @see com.spartanlaboratories.engine.game.GameObject#addToMap()
+	 */
+	@Override
+	protected void addToMap() {
+		values.put("solid", String.valueOf(solid));
+		values.put("immobile", String.valueOf(immobile));
 	}
 }
