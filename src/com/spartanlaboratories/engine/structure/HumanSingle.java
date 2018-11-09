@@ -20,16 +20,16 @@ public class HumanSingle extends Human{
 	public void poll() {
 		for(Input i: input)switch(i.source){
 		case KEYBOARD:
-			receiveKeyInput(i.button, i.type.toString().toLowerCase());
+			processKeyInput(i.button, i.type.toString().toLowerCase());
 			break;
 		case MOUSE:
-			receiveMouseInput(i.button, i.type.toString().toLowerCase());
+			processMouseInput(i.button, i.type.toString().toLowerCase());
 			if(i.location == null) break;
 		case MOUSELOCATION:
-			receiveMouseInput(MOUSELOCATION, i.location.toString());
+			processMouseInput(MOUSELOCATION, i.location.toString());
 			break;
 		case MOUSEWHEEL:
-			receiveMouseInput(MOUSEWHEEL, String.valueOf(i.button));
+			processMouseInput(MOUSEWHEEL, String.valueOf(i.button));
 			break;
 		default:
 			System.out.println("Single player version of the human class received bad input");

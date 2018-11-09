@@ -57,6 +57,7 @@ public abstract class Controller extends StructureObject{
 		return controlledUnits;
 	}
 	public void setSelectedUnit(Actor actor){
+		System.out.println("Selected unit was set to: " + actor);
 		selectedUnit = actor;
 	}
 }

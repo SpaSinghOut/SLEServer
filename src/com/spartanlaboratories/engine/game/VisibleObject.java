@@ -18,7 +18,7 @@ public class VisibleObject extends GameObject{
 	private double height;
 	private double width;
 	private String texture;
-	private final Rectangle areaCovered = new Rectangle(new Location(), 0, 0);
+	private final Rectangle areaCovered = new Rectangle(new Location(), new Location(0,0));
 	ArrayList<Effect> effects = new ArrayList<Effect>(); // Maybe unused
 	private TextureInfo textureInfo = new TextureInfo();
 	public enum Shape{
@@ -231,5 +231,9 @@ public class VisibleObject extends GameObject{
 	}
 	public String getTextureNE() {
 		return texture;
+	}
+	@Override
+	public String toString() {
+		return areaCovered.toString() + "\nColor: " + color + "\n Texture: " + texture;
 	}
 }

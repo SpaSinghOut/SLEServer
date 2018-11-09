@@ -10,15 +10,6 @@ import com.spartanlaboratories.engine.structure.StandardCamera;
  * 
  */
 public class Location extends com.spartanlaboratories.measurements.Location{
-	/**
-	 * Creates a location with the given coordinates. Meant to be used when creating a new Location 
-	 * at a specific point. When changing the location of an already existing point 
-	 * use {@link #setCoords(double,  double)}, or {@link #change(double, double)}
-	 * @param setX the new value of the horizontal coordinate
-	 * @param setY the new value of the vertical coordinate
-	 * @see #Location()
-	 * @see #Location(com.spartanlaboratories.measurements.Location)
-	 */
 	public Location(double setX, double setY){
 		super(setX,setY);
 	}

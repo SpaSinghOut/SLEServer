@@ -124,7 +124,7 @@ public abstract class Map extends StructureObject{
 			rune.setLocation(new Location(((int)(Math.random() * engine.getWrap().x)), ((int)(Math.random() * engine.getWrap().y))));
 		}
 	}
-	private void generateTerrain(){
+	protected void generateTerrain(){
 		final int obstacleWidth = TerrainObject.defaultTerrainSize;
 		for(int i = 0; i < engine.getWrap().x / 60; i++){
 			terrain[i * 4] = new TerrainObject(engine);

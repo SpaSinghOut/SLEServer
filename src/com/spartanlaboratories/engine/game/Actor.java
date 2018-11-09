@@ -266,4 +266,9 @@ public class Actor extends VisibleObject implements AcceptsInput{
 		setMovement(target);
 		moveToALocation();
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + "\nDirection: " + locChange;
+	}
 }

@@ -300,7 +300,7 @@ public class DynamicCamera extends StructureObject implements Camera{
 		}
 		
 	}
-	// CONSTRUCTORS
+	
 	/**
 	 * Creates a new Dynamic camera. The world and monitor coverage of the camera is going to match that of the arguments.
 	 * 
@@ -321,8 +321,10 @@ public class DynamicCamera extends StructureObject implements Camera{
 		zoom.zoomOut(1);
 	}
 	/**
-	 * Creates a DynamicCamera object with default properties. The default properties are: the location of the display is the center of the monitor, the size
-	 * of the display is the size of the monitor, the size of the world display has a 1:1 ratio to the size of the display, the world center is (0,0).
+	 * Creates a DynamicCamera object with default properties. The default properties are: the location of the display 
+	 * is the center of the monitor, the size
+	 * of the display is the size of the monitor, the size of the world display has a 1:1 ratio to the size of the 
+	 * display, the world center is (0,0).
 	 * 
 	 * @param engine the game engine
 	 * @param screenSize the size of the screen
@@ -565,11 +567,13 @@ public class DynamicCamera extends StructureObject implements Camera{
 	@Override
 	public Actor unitAt(Location monitorLocation) {
 		Location location = getLocationInWorld(monitorLocation);
+		System.out.println("In world: " + location);
 		final int searchRange = 200;
 		ArrayList<Actor> actors = engine.qt.retriveActors(location.x - searchRange, location.y - searchRange, location.x + searchRange, location.y + searchRange);
 		for(Actor a: actors)
 			if(engine.util.checkPointCollision(a, location))
 				return a;
+		System.out.println("did not find actor");
 		return null;
 	}
 
@@ -586,7 +590,6 @@ public class DynamicCamera extends StructureObject implements Camera{
 			pan.resetSpeed();
 			return;
 		}
-		System.out.println(pan.speed);
 		if(monitorLocation.x < pan.panningRange)world.move(-pan.getSpeed(), 0d);
 		else if(monitorLocation.x > monitor.getXMax() - pan.panningRange)world.move(pan.getSpeed(),0d);
 		if(monitorLocation.y < pan.panningRange)world.move(0d,pan.getSpeed());

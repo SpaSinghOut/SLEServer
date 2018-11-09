@@ -112,4 +112,9 @@ public abstract class GameObject extends StructureObject{
 	 * 
 	 */
 	public abstract void update();
+	
+	@Override
+	public String toString() {
+		return "Location: " + location;
+	}
 }

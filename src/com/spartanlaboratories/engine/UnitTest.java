@@ -15,17 +15,14 @@ public class UnitTest extends Map{
 	public static void main(String[] args){
 		Engine engine = new Engine();
 		engine.goMulti(new UnitTest(engine),numberOfPlayers);
-		//engine.goMultiTest(new UnitTest(engine));
 		engine.tracker.initialize(Tracker.TrackerPreset.PRESET_TICK);
 		engine.run();
 	}
 	public UnitTest(Engine engine) {
 		super(engine);
-		// TODO Auto-generated constructor stub
 	}
 	@Override
 	protected void update() {
-		// TODO Auto-generated method stub
 		
 	}
 	@Override

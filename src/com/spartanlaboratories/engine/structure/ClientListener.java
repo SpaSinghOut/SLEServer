@@ -32,7 +32,13 @@ class ClientListener{
 					human.setScreenSize(Location.parseLocation(in.readLine()));
 					break;
 				case "input":
-					processInput(in.readLine());
+					String inputType = in.readLine();
+					if(inputType.equals("physical"))
+						processPhysicalInput();
+					else if(inputType.equals("virtual"))
+						processVirtualInput();
+					else 
+						System.out.println("Unrecognized input type: ".concat(inputType));
 					break;
 				}
 			}
@@ -40,25 +46,37 @@ class ClientListener{
 			e.printStackTrace();
 		}
 	}
-	private void processInput(String inputType) throws NumberFormatException, IOException{
-		switch(inputType){
+	private void processPhysicalInput() throws NumberFormatException, IOException{
+		String type = in.readLine().toLowerCase();
+		switch(type){
 		case "click":
 			int button = Integer.parseInt(in.readLine());		// Get the mouse button
-			human.receiveMouseInput(button, in.readLine());		// Send the button and the type of key press
+			human.processMouseInput(button, in.readLine());		// Send the button and the type of key press
 			break;
 		case "key":
 			int key = Integer.parseInt(in.readLine());			// First get the key
-			human.receiveKeyInput(key, in.readLine()); 			// Then send both the key and the press type
+			human.processKeyInput(key, in.readLine()); 			// Then send both the key and the press type
 			break;
 		case "wheel":
-			human.receiveMouseInput(4, in.readLine());	//Send information as a wheel reading
+			human.processMouseInput(4, in.readLine());	//Send information as a wheel reading
 			break;
 		case "mouse location":
-			human.receiveMouseInput(0, in.readLine());
+			human.processMouseInput(0, in.readLine());
 			break;
 		default:
-			System.out.println("unrecognized input type received from the client");
+			System.out.println("unrecognized input type received from the client: ".concat(type));
 			break;
+		}
+	}
+	private void processVirtualInput() throws NumberFormatException, IOException{
+		switch(in.readLine()) {
+		case "button":
+			int mouseButton = Integer.parseInt(in.readLine());
+			String buttonAlternative = in.readLine();
+			String[] buttonData = new String[Integer.parseInt(in.readLine())];
+			for(int i = 0; i < buttonData.length; i++)
+				buttonData[i] = in.readLine();
+			human.processButtonClick(mouseButton, buttonAlternative, buttonData);
 		}
 	}
 	void sendQuadInfo(String info){

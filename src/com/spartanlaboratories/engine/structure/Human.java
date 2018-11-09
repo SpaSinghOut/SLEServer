@@ -32,11 +32,12 @@ public abstract class Human extends Controller{
 	public Location getMouseLocation(){
 		return mouseLocation;
 	}
-	void receiveMouseInput(int button, String string) throws IllegalArgumentException{
+	void processMouseInput(int button, String string) throws IllegalArgumentException{
 		try{
 			if(button == MOUSELOCATION)
 				mouseLocation = Location.parseLocation(string);
-			else if(button < 4 && button > 0){
+			else if(button < 6 && button > 0){
+				System.out.println("Click at: " + getMouseLocation());
 				coveringCamera(getMouseLocation()).handleClick(button);
 				if(button == MOUSELEFT){
 					Actor clicked = coveringCamera(mouseLocation).unitAt(mouseLocation);
@@ -58,7 +59,7 @@ public abstract class Human extends Controller{
 			System.out.println("the server caught improper input");
 		}
 	}
-	public void receiveKeyInput(int key, String pressType){
+	public void processKeyInput(int key, String pressType){
 		if(key == KeyEvent.VK_Q)((Ability)((Hero)controlledUnits.get(0)).abilities.get(0)).cast();
 	}
 	public Camera coveringCamera(Location locationOnScreen) throws SLEImproperInputException{
@@ -67,6 +68,13 @@ public abstract class Human extends Controller{
 				return c;
 		throw new SLEImproperInputException(engine.tracker, "The Human type unit controller: " + engine.controllers.indexOf(this)
 				+ " attempted a world based mouse action that was outside of the scope of any camera: " + locationOnScreen);
+	}
+	public void processButtonClick(int mouseButton, String alternateClick, String[] buttonData) {
+		System.out.println("An on screen button was clicked");
+		System.out.println("The mouse button used was: " + mouseButton);
+		if(!alternateClick.equals("none"))System.out.println("The ".concat(alternateClick).concat(" click variant was used"));
+		System.out.println("The button data is: ");
+		for(int i = 0; i < buttonData.length; i++)System.out.println(buttonData[i]);
 	}
 	public void addCamera(Camera camera){
 		cameras.add(camera);
